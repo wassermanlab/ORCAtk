@@ -1,0 +1,24 @@
+<form name="new_analysis" enctype="multipart/form-data" method="post">
+  <input type="hidden" name="sid" value="[%sid%]">
+  <input type="hidden" name="from" value="select_seq_input_method">
+  <input type="hidden" name="rm" value="analysis_start">
+  <h2>Step 1 - Select Sequence Input Method</h2>
+  <hr noshade>
+  <br>
+  <span class="text">
+  You may select sequence(s) by choosing one of the input methods below:
+  </span>
+  <br>
+  <br>
+  <span align="center">
+  <input type="submit" name="Submit" value="Search by gene symbol/name" onClick="javascript:document.new_analysis.rm.value='select_seq1_name'">&nbsp;Pairwise and multi-species (phastCons) analysis
+  <br>
+  <br>
+  <br>
+  <input type="submit" name="Submit" value="Retrieve from Ensembl by genomic coordinates" onClick="javascript:document.new_analysis.rm.value='select_seq1_coords'">&nbsp;Pairwise and multi-species (phastCons) analysis
+  <br>
+  <br>
+  <br>
+  <input type="submit" name="Submit" value="Paste/upload sequences" onClick="javascript:document.new_analysis.rm.value='select_seqs_paste_upload'">&nbsp;Pairwise analysis only
+  </span>
+</form>

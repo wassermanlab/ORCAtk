@@ -1,0 +1,31 @@
+<form name="select_gene" enctype="multipart/form-data" method="post">
+  <input type="hidden" name="sid" value="[%sid%]">
+  <input type="hidden" name="from" value="select_gene">
+  <input type="hidden" name="rm" value="analysis_start">
+  <h2>Step 1b - Select Gene and Orthologous Species</h2>
+  <hr noshade>
+  Select [%species1%] gene:
+  <br>
+  <br>
+  [%first = 1%]
+  [%FOREACH g = in_gene_list%]
+    <input type="radio" name="ensembl_id1" value="[%g.stable_id%]" [%IF first%]checked[%END%]>[%g.external_name%] - [%g.description%]<br>
+    [%first = 0%]
+  [%END%]
+  <br>
+  <br>
+  Select ortholog species:
+  <select size=1 name=species2>
+    [%FOREACH s = species%]
+      <option value="[%s%]" [%IF s == in_species2%]selected[%END%]>[%s%]</option>
+    [%END%]
+  </select>
+  <br>
+  <br>
+<!--
+  <input type="reset" name="Reset" value="Reset" align="right">
+  <br>
+-->
+  <input type="submit" name="Submit" value="Submit" onClick="javascript:document.select_gene.rm.value='select_ortholog'">
+  <input type="submit" name="Submit" value="Start Again">
+</form>

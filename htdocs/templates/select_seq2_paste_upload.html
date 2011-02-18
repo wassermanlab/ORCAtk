@@ -1,0 +1,25 @@
+<form name="select_seq2" enctype="multipart/form-data" method="post">
+  <input type="hidden" name="sid" value="[%sid%]">
+  <input type="hidden" name="from" value="select_seq2_paste_upload">
+  <input type="hidden" name="rm" value="select_ca_params">
+  <hr noshade>
+  <h2>Step 1b - Select Orhologous Sequence (paste/upload)</h2>
+  <hr noshade>
+  <h3>Orthologous Sequence</h3>
+  <span class="text">Paste orthologous sequence (plain text or FastA format):</span>
+  <br>
+  <textarea name="seq2" rows="10" cols="60" wrap="SOFT">[%in_seq2%]</textarea>
+  <br>
+  <br>
+  <span class="text"><b>OR</b> upload orthologous sequence (FastA format):</span>
+  <br>
+  <input type="file" name="seq_file2" size="60" value="[%in_seq_file2%]">
+  <br>
+  <br>
+  <input type="button" name="clear_seq2" value="Clear All" onClick="{select_seq2.seq2.value='';select_seq2.seq_file2.value=''}">
+  <br>
+  <br>
+  <hr noshade>
+  <input type="submit" name="Submit" value="Continue to Conservation Parameter Selection"><br><br>
+  <input type="submit" name="Submit" value="Start Again" onClick="javascript:document.select_seq2.rm.value='analysis_start'">
+</form>

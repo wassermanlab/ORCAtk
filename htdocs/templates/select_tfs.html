@@ -1,0 +1,77 @@
+<form name="select_tfs" enctype="multipart/form-data" method="post">
+  <input type="hidden" name="rm" value="results">
+  <input type="hidden" name="sid" value="[%sid%]">
+  <input type="hidden" name="from" value="select_tfs">
+  <h2>Step 3 - Select TFBS Profiles</h2>
+  <hr noshade>
+  <h3>JASPAR CORE Profiles</h3>
+  <input type="radio" name="tf_select_method" value="tax_group" [%IF in_tf_select_method == 'tax_group'%]checked[%END%]>
+  <span class="text">Select JASPAR CORE profiles by taxonomic supergroup:</span>  <br>
+  [%FOREACH tax_group = tax_groups%]
+    <input type="checkbox" name="core_tax_groups" value="[%tax_group%]" [%IF in_tax_groups_selected.$tax_group%]checked[%END%] onClick="{if (checked) {select_tfs.tf_select_method[0].checked=true}}"> [%tax_group%]&nbsp;
+  [%END%]
+  <br>
+  <br>
+<!--
+  <input type="radio" name="tf_select_method" value="min_ic" [%IF in_tf_select_method == 'min_ic'%]checked[%END%]>
+  <span class="text">
+    <b>OR</b> all JASPAR CORE vertebrate profiles with a minimum specificity of
+  <input type="text" name="min_ic" value="[%in_tf_min_ic()%]" size="2" onFocus="select_tfs.tf_select_method[1].checked=true"> bits
+  </span>
+-->
+  <span class="text">
+    limit profiles to those with a minimum specificity of
+  <input type="text" name="min_ic" value="[%in_tf_min_ic()%]" size="2"> bits
+  </span>
+  <br>
+  <br>
+  <input type="radio" name="tf_select_method" value="specific" [%IF in_tf_select_method == 'specific'%]checked[%END%]>
+  <span class="text"><b>OR</b> select specific JASPAR CORE vertebrate profiles:</span><br>
+  <select multiple size="10" name="core_tf_ids" onFocus="select_tfs.tf_select_method[1].checked=true">
+    [%FOREACH tf = core_vert_tf_list%]
+      [%tf_id = tf.ID()%]
+      <option value="[%tf_id%]" [%IF in_core_tf_ids_selected.$tf_id%]selected[%END%]>[%tf.name()%]</option>
+    [%END%]
+  </select>
+  <br>
+  <br>
+  <h3>JASPAR Collections</h3>
+  [%FOREACH tf_collection = tf_collections%]
+    <input type="radio" name="tf_select_method" value="[%tf_collection%]" [%IF in_tf_collection == tf_collection%]checked[%END%]> All [%tf_collection%] profiles<br>
+  [%END%]
+  <br>
+  <br>
+  <input type="radio" name="tf_select_method" value="upload" [%IF in_tf_select_method == 'upload'%]checked[%END%]>
+  <span class="text"><b>OR</b> upload TFBS profile matrice(s) (see <a href="javascript:newWindow=window.open('[%rel_html_path%]/help.html#matrix_format','help','width=800,height=800,toolbar=1,location=0,directories=0,status=0,menuBar=0,scrollBars=1,resizable=1'); newWindow.focus()">format</a>):</span>
+  <br>
+  <input type="file" name="tf_matrix_file" size="40" value="[%in_tf_matrix_file%]" onClick="select_tfs.tf_select_method[2].checked=true" onFocus="select_tfs.tf_select_method[7].checked=true">
+  <br>
+  <br>
+  <input type="radio" name="tf_select_method" value="paste" [%IF in_tf_select_method == 'paste'%]checked[%END%]>
+  <span class="text"><b>OR</b> paste TFBS profile matrice(s) (see <a href="javascript:newWindow=window.open('[%rel_html_path%]/help.html#matrix_format','help','width=800,height=800,toolbar=1,location=0,directories=0,status=0,menuBar=0,scrollBars=1,resizable=1'); newWindow.focus()">format</a>):</span>
+  <br>
+  <textarea name="tf_matrix_text" rows="10" cols="60" wrap="SOFT" onFocus="select_tfs.tf_select_method[8].checked=true">[%in_tf_matrix_text%]</textarea>
+  <br>
+  <br>
+  TFBS profile score threshold <input type="text" name="tf_threshold" size="4" value="[%in_tf_threshold%]">%
+  <br>
+  <br>
+  Limit TFBS search region to between <input type="text" name="tf_search_start" size="6" value="[%in_tf_search_start%]"> and <input type="text" name="tf_search_end" size="6" value="[%in_tf_search_end%]"> relative to start of sequence
+  <br>
+  <br>
+  <input type="checkbox" name="tf_filter_sites" [%IF in_tf_filter_sites%]checked[%END%]> Filter overlapping TFBSs (<a href="javascript:newWindow=window.open('[%rel_html_path%]/help.html#filter_tfbss','help','width=800,height=800,toolbar=1,location=0,directories=0,status=0,menuBar=0,scrollBars=1,resizable=1'); newWindow.focus()">?</a>)
+  <br>
+  <br>
+  <input type="reset" name="reset" value="Reset">
+  <br>
+  <br>
+  <hr noshade>
+  <br>
+  <input type="submit" name="Submit" value="Results">
+  <br>
+  <br>
+  <input type="submit" name="Submit" value="Change Conservation Parameters" onClick="javascript:document.select_tfs.rm.value='select_ca_params';">
+  <br>
+  <br>
+  <input type="submit" name="Submit" value="Start Again" onClick="javascript:document.select_tfs.rm.value='analysis_start'">
+</form>

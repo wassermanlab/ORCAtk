@@ -1,0 +1,101 @@
+align_cons -  Compute conserved regions from an alignment.
+
+--------------------------------------------------------------------------------
+
+Usage:
+align_cons [-i in_file] [-w window_size] [-n increment]
+		[-t threshold] [-s stringency] [-g gff_file] [-r report_type]
+		[-l length] [-f format] [-o out_file] [-D]
+where:
+	-i in_file     = Input alignment file in multi-FastA format.
+	                 (default = stdin)
+	-w window_size = Size of % identity scoring window.
+	                 (default 100)
+	-n increment   = Amount to slide scoring window.
+	                 (default = 1)
+	-t theshold    = Min. % identity score of conserved regions to
+	                 report.
+	-s stringency  = Stringency for dynamically computing the
+	                 threshold. Stringency is interpreted to mean the
+	                 top X% of scoring windows. Threshold is computed
+	                 such that X% of the windows score above that
+	                 threshold. If the -t parameter if also specified,
+	                 and the dynamically computed threshold falls
+	                 below the specified threshold, the specified
+	                 threshold, the specified threshold overrides the
+	                 computed threshold.
+	                 (default = 0.10)
+	-g gff_file    = GFF file containing features to filter out of
+	                 conserved regions
+	-r report_type = A 'p' or 'c' indicating type of report to
+	                 output. A 'p' outputs position and score
+	                 suitable for making conservation plots.
+	                 A 'c' outputs conserved regions. Format of this
+	                 file is:
+	                 seq_start seq_end length align_start align_end score
+	                 (default = 'c')
+	-l length      = Minimum length of conserved regions to report
+	                 (after filtering features)
+	                 (default = 20)
+	-f format      = For conservation plot reports (-r p), Character
+	                 indicating whether the position output is start
+	                 's', end 'e' or center 'c'
+	                 (default = 's')
+	-o out_file    = Output file
+	                 (default = stdout)
+	-D             = Turn on debugging output
+	-h             = Print this usage message
+	-?             = Print this usage message
+
+--------------------------------------------------------------------------------
+EXAMPLE:
+
+Align sequences with ORCA:
+
+  orca.pl -in1 human.fa -in2 mouse.fa -o human_mouse.orca
+
+Output the top 5% of conserved regions with align_cons:
+
+  align_cons -i human_mouse.orca -s 0.05 -o human_mouse.regions
+
+Output the top 5% of conserved regions with align_cons AND filter out exon
+positions, reporting only filtered conserved regions which are at least 50bp
+long:
+
+  align_cons -i human_mouse.orca -s 0.05 -o human_mouse.regions
+  		-g human.gff -l 50
+
+-------------------------------------------------------------------------------
+
+Computing Conserved Regions:
+---------------------------
+
+A scoring window of a given size (default = 100 nucleotides) is slid along the alignment (default sliding increment is 1 nucleotide) and the percent identity is calculated at each window position. Then all the windows which score above some given percent identity threshold (otherwise known as conservation cutoff) are merged into larger regions such that these larger regions also score greater than the given percent identity. These are reported as the conserved regions.
+
+You can specify either a top percentile or a percent identity or both. If you specify just a percent identity, it is used directly as the minimum percentage identity of conserved regions to report. If you just specify the top percentile, then it is used to dynamically compute the minimum percent identity of conserved regions to report (as I'll explain below). If you specify both a top percentile and a percent identity, then a percent identity is computed from the top percentile and if it is more than the specified percent identity, then the computed value is used as the minimum percent identity of conserved regions to report, otherwise the specified percent identity is used as the minimum to report.
+
+Computing Minimum Percent Identity from Top Percentile
+------------------------------------------------------
+Given,
+  T = top percentile
+  S = some minimum percent identity of conserved regions to report
+  N = total number of scoring windows (as described above)
+  n = total number of scoring windows with percent identity score s >= S
+Then compute S such that n/N = T
+
+So, if you have a sequence of 1000 bp and you are using a sliding window of 100 bp with a sliding increment of 1 bp. That means you will end up with 901 scoring windows (sequence length - widow width + 1). If  T = 0.1 that means I want to calculate S so that 10% (~90) of the window scores are >= S.
+
+Example:
+If I have the following 10 (ordered) window scores:
+0.4
+2.5
+9.8
+15.6
+22.1
+34.9    <-- T = 50% ==> S = 34.9%
+42.6
+58.3
+72.1    <-- T = 20% ==> S = 72.1%
+99.9    <-- T = 10% ==> S = 99.9%
+
+If top percentile is set to 50%, then conservation cutoff is computed as 34.9% because 50% of the scoring windows (5 windows) have scores >= 34.9% etc...

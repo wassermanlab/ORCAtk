@@ -1,0 +1,57 @@
+<form name="select_seqs" enctype="multipart/form-data" method="post">
+  <input type="hidden" name="sid" value="[%sid%]">
+  <input type="hidden" name="from" value="select_seqs_coords">
+  <input type="hidden" name="rm" value="select_ca_params">
+  <h2>Step 1a - Select Sequences (Genomic Coordinates)</h2>
+  <hr noshade>
+  <h3>Sequence 1 (sequence of interest)</h3>
+  <span class="text">Retrieve first sequence from Ensembl:</span>
+  <br>
+  <span class="subtext">
+  Database:
+  <select size=1 name=species1>
+    [%FOREACH spec = species%]
+      <option value=[%spec%] [%IF spec == in_species1%]selected[%END%]>[%spec%]</option>
+    [%END%]
+  </select>
+  Chr:
+  <input type="text" name="seq_chr1" value="[%in_seq_chr1%]" size="2">
+  Start:
+  <input type="text" name="seq_start1" value="[%in_seq_start1%]" size="12">
+  End:
+  <input type="text" name="seq_end1" value="[%in_seq_end1%]" size="12">
+  </span>
+  <br>
+  <br>
+  <input type="button" name="clear_seq1" value="Clear All" onClick="{select_seqs.seq_chr1.value='';select_seqs.seq_start1.value='';select_seqs.seq_end1.value='';select_seqs.seq_rc1.checked=false}">
+  <br>
+  <hr noshade>
+  <h3>Sequence 2 (orthologous sequence)</h3>
+  <span class="text">Retrieve second sequence from Ensembl:</span>
+  <br>
+  <span class="subtext">
+  Database:
+  <select size=1 name=species2>
+    [%FOREACH spec = species%]
+      <option value=[%spec%] [%IF spec == in_species2%]selected[%END%]>[%spec%]</option>
+    [%END%]
+  </select>
+  Chr:
+  <input type="text" name="seq_chr2" value="[%in_seq_chr2%]" size="2">
+  Start:
+  <input type="text" name="seq_start2" value="[%in_seq_start2%]" size="12">
+  End:
+  <input type="text" name="seq_end2" value="[%in_seq_end2%]" size="12">
+  </span>
+  <br>
+  <br>
+  <input type="button" name="clear_seq2" value="Clear All" onClick="{select_seqs.seq_chr2.value='';select_seqs.seq_start2.value='';select_seqs.seq_end2.value=''}"
+  <br>
+  <hr noshade>
+<!--
+  <span align="right"><input type="reset" name="Reset" value="Reset"></span>
+  <br>
+-->
+  <input type="submit" name="Submit" value="Continue to Parameter Selection">
+  <input type="submit" name="Submit" value="Start Over" onClick="javascript:document.select_seqs.rm.value='analysis_start'">
+</form>

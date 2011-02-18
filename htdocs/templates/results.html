@@ -1,0 +1,95 @@
+<form name="results" enctype="multipart/form-data" method="post">
+  <input type="hidden" name="sid" value="[%sid%]">
+  <input type="hidden" name="from" value="results">
+  <input type="hidden" name="rm" value="analysis_start">
+  <h2>Analysis Results</h2>
+  <hr noshade>
+  <h3>Selected Parameters</h3>
+  <table border="0" cellpadding="2" cellspacing="0">
+    <tr>
+      <td align="left">Top percentile of conserved regions:</td>
+      <td>[%IF in_ca_top_percentile%][%in_ca_top_percentile%]%[%END%]</td>
+    </tr>
+    <tr>
+      <td align="left">Minimum conservation (% identity):</td>
+      <td>[%IF in_ca_min_conservation%][%in_ca_min_conservation%]%[%END%]</td>
+    </tr>
+    <tr>
+      <td align="left">Sliding window size:</td>
+      <td>[%in_ca_window_size%]</td>
+    </tr>
+    <tr>
+      <td align="left">Minium conserved region size:</td>
+      <td>[%in_ca_min_cr_length%]</td>
+    </tr>
+    <tr>
+      <td align="left">Filter exons:</td>
+      <td>[%IF in_ca_filter_exons%]Yes[%ELSE%]No[%END%]</td>
+    </tr>
+    <tr>
+      <td align="left">TFBS search start:</td>
+      <td>[%in_tf_search_start%]</td>
+    </tr>
+    <tr>
+      <td align="left">TFBS search end:</td>
+      <td>[%in_tf_search_end%]</td>
+    </tr>
+    <tr>
+      <td align="left">TF score threshold:</td>
+      <td>[%in_tf_threshold%]%</td>
+    </tr>
+    <tr>
+      <td align="left">Filter overlapping sites:</td>
+      <td>[%IF in_tf_filter_sites%]Yes[%ELSE%]No[%END%]</td>
+    </tr>
+    <tr>
+      <td align="left">Graph reversed:</td>
+      <td>[%IF in_flip_graph%]Yes[%ELSE%]No[%END%]</td>
+    </tr>
+  </table>
+  <br>
+  <br>
+  [%IF plot_file%]<img src="[%plot_file%]">[%END%]
+  <br>
+  <br>
+  <table cellspacing="10">
+<!--
+    <tr>
+      <td>View</td>
+      <td><a href="javascript:newWindow=window.open('[%aln_file%]','align_text'); newWindow.focus()">Alignment</a></td>
+      <td><a href="javascript:newWindow=window.open('[%cr_file%]','cr_text'); newWindow.focus()">Conserved regions</a></td>
+      <td><a href="javascript:newWindow=window.open('[%css_file%]','css_text'); newWindow.focus()">Conserved sub-sequences</a></td>
+      [%IF tfbs_file%]<td><a href="javascript:newWindow=window.open('[%tfbs_file%]','tf_text'); newWindow.focus()">TF binding sites</a></td>[%END%]
+    </tr>
+-->
+    <tr>
+      <td>View (left-click) or download (right-click and "Save as..."):</td>
+      [%IF aln_file%]
+      <td><a href="[%aln_file%]">Alignment</a></td>
+      [%END%]
+      <td><a href="[%cr_file%]">Conserved regions</a></td>
+      <td><a href="[%css_file%]">Conserved sub-sequences</a></td>
+      [%IF tfbs_file%]
+      <td><a href="[%tfbs_file%]">TF binding sites</a></td>
+      [%END%]
+      [%IF ucsc_file%]
+      <td><a href="[%ucsc_file%]">UCSC Browser Track</a></td>
+      [%END%]
+    </tr>
+      <td>Download (right-click and "Save as..."):</td>
+      <td><a href="[%arch_file%]">full results</a></td>
+    <tr>
+    [%IF ucsc_url%]
+    </tr>
+      <td>View results in <a href="javascript:newWindow=window.open('[%ucsc_url%]','ucsc_win'); newWindow.focus()">UCSC browser</a></td>
+    <tr>
+    [%END%]
+    </tr>
+  </table>
+  <br>
+  <hr noshade>
+  <br>
+  <input type="submit" name="Submit" value="Change Conservation Parameters" onClick="javascript:document.results.rm.value='select_ca_params'; return true;"><br><br>
+  <input type="submit" name="Submit" value="Select/Change TFBS Profiles" onClick="javascript:document.results.rm.value='select_tfs'; return true;"><br><br>
+  <input type="submit" name="Submit" value="Start New Analysis">
+</form>

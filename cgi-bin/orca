@@ -1,0 +1,35 @@
+#!/usr/local/bin/perl -w
+
+=head1 NAME
+
+orca - The top-level ORCA web application CGI script
+
+=head1 SYNOPSIS
+
+    use ORCA::Web::Application;
+
+    my $app = ORCA::Web::Application->new();
+    $app->run;
+
+=head1 AUTHOR
+
+  David Arenillas (dave@cmmt.ubc.ca)
+
+=head1 COPYRIGHT
+
+  Wasserman Lab
+  Centre for Molecular Medicine and Therapeutics
+  University of British Columbia
+
+  Distributed under the terms of the GNU General Public License (GPL)
+
+=cut
+
+use strict;
+
+use lib '/space/devel/ORCAtk/lib';
+
+use ORCA::Web::Application;
+
+my $app = ORCA::Web::Application->new();
+$app->run;

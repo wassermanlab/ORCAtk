@@ -1,0 +1,26 @@
+<form name="select_ortholog" enctype="multipart/form-data" method="post">
+  <input type="hidden" name="sid" value="[%sid%]">
+  <input type="hidden" name="from" value="select_ortholog">
+  <input type="hidden" name="rm" value="select_transcripts">
+  <h2>Step 1c - Select Orthologous Gene</h2>
+  <hr noshade>
+  Select <b>[%species2%]</b> gene:
+  <br>
+  <br>
+  [%first = 1%]
+  [%FOREACH g = in_gene_list%]
+    <input type="radio" name="ensembl_id2" value="[%g.stable_id%]" [%IF first%]checked[%END%]><b>[%g.external_name%]</b> - [%g.description%]<br>
+    [%first = 0%]
+  [%END%]
+  <br>
+  <hr noshade>
+  <br>
+<!--
+  <input type="reset" name="Reset" value="Reset" align="right">
+  <br>
+-->
+  <input type="submit" name="Submit" value="Submit">
+  <br>
+  <br>
+  <input type="submit" name="Submit" value="Start Over" onClick="javascript:document.select_ortholog.rm.value='analysis_start'">
+</form>

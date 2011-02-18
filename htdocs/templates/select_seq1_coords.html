@@ -1,0 +1,38 @@
+<form name="select_seq1" enctype="multipart/form-data" method="post">
+  <input type="hidden" name="sid" value="[%sid%]">
+  <input type="hidden" name="from" value="select_seq1_coords">
+  <input type="hidden" name="analysis_type" value="">
+  <input type="hidden" name="rm" value="analysis_start">
+  <h2>Step 1a - Select Sequence (by genomic coordinates)</h2>
+  <hr noshade>
+  <h3>Sequence</h3>
+  Retrieve sequence from Ensembl:
+  <br>
+  <span class="text">
+  Species:
+  <select size=1 name=species1>
+    [%FOREACH spec = species%]
+      <option value=[%spec%] [%IF spec == in_species1%]selected[%END%]>[%spec%]</option>
+    [%END%]
+  </select>
+  Chr:
+  <input type="text" name="seq_chr1" value="[%in_seq_chr1%]" size="8">
+  Start:
+  <input type="text" name="seq_start1" value="[%in_seq_start1%]" size="12">
+  End:
+  <input type="text" name="seq_end1" value="[%in_seq_end1%]" size="12">
+  </span>
+  <br>
+  <br>
+  <input type="button" name="clear_seq1" value="Clear All" onClick="{select_seq1.seq_chr1.value='';select_seq1.seq_start1.value='';select_seq1.seq_end1.value='';select_seq1.seq_rc1.checked=false}">
+  <br>
+  <hr noshade>
+  <br>
+  <input type="submit" name="Submit" value="Multi-species (phastCons) Analysis" onClick="javascript:document.select_seq1.rm.value='select_ca_params'; document.select_seq1.analysis_type.value='phastcons'">&nbsp;(human/mouse only) Continue to conservation parameter selection
+  <br>
+  <br>
+  <input type="submit" name="Submit" value="Pairwise Analysis" onClick="javascript:document.select_seq1.rm.value='select_seq2_coords'; document.select_seq1.analysis_type.value='pairwise'">&nbsp;Requires selection of orthologous sequence <a href="[%rel_html_path%]/supplemental/Phylo_Foot_Guide_NAR2009.pdf">(guide)</a>
+  <br>
+  <br>
+  <input type="submit" name="Submit" value="Start Again">
+</form>

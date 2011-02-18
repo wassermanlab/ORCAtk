@@ -1,0 +1,50 @@
+<form name="select_transcripts" enctype="multipart/form-data" method="post">
+  <input type="hidden" name="sid" value="[%sid%]">
+  <input type="hidden" name="from" value="select_transcripts">
+  <input type="hidden" name="rm" value="select_ca_params">
+  <h2>Select 1d - Select Transcripts</h2>
+  <hr noshade>
+  Select <b>[%species1%]</b> transcript:<br>
+  <table>
+    <tr>
+      <td width="30%">
+      [%first = 1%]
+      [%FOREACH t = transcripts1%]
+	<input type="radio" name="trans_id1" value="[%t.stable_id%]" [%IF first%]checked[%END%]><b>[%t.external_name%]</b><br>
+	[%first = 0%]
+      [%END%]
+      </td>
+      <td>
+	<img src="[%panel_file1%]">
+      </td>
+    </tr>
+  </table>
+  <br>
+  <br>
+  Select <b>[%species2%]</b> transcript:<br>
+  <table>
+    <tr>
+      <td width="30%">
+      [%first = 1%]
+      [%FOREACH t = transcripts2%]
+	<input type="radio" name="trans_id2" value="[%t.stable_id%]" [%IF first%]checked[%END%]><b>[%t.external_name%]</b><br>
+	[%first = 0%]
+      [%END%]
+      </td>
+      <td>
+	<img src="[%panel_file2%]">
+      </td>
+    </tr>
+  </table>
+  <br>
+  <br>
+  Include <input type="text" name="upstream_bp" size="5" value="[%in_upstream_bp%]"> bp upstream of the TSS and <input type="text" name="downstream_bp" size="5" value="[%in_downstream_bp%]"> bp downstream of the <input type="radio" name="down_rel_to" value="tss" [%IF in_down_rel_to == 'tss'%]checked[%END%]> TSS <input type="radio" name="down_rel_to" value="end" [%IF in_down_rel_to == 'end'%]checked[%END%]> 3' end of transcript
+  <br>
+  <br>
+  <hr noshade>
+  <br>
+  <input type="submit" name="Submit" value="Submit">
+  <br>
+  <br>
+  <input type="submit" name="Submit" value="Start Over" onClick="javascript:document.select_transcripts.rm.value='analysis_start'">
+</form>

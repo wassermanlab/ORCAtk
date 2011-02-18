@@ -1,0 +1,12 @@
+Building and installing align_cons executable.
+
+To build and install, use the following:
+	make
+	make install
+
+The default installation directory is /usr/local/bin. Root access is generally
+required to install there. Edit the BINDIR variable in the Makefile to change
+the installation directory. Alternatively, the program can be built and copied
+to whichever directory required. In order for this program to work correctly
+with the ConservationAnalysis modules it needs to be installed in a directory
+which is in your PATH.

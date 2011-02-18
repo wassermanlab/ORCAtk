@@ -1,0 +1,73 @@
+<form name="select_seqs" enctype="multipart/form-data" method="post">
+  <input type="hidden" name="sid" value="[%sid%]">
+  <input type="hidden" name="from" value="select_seqs_paste_upload">
+  <input type="hidden" name="rm" value="analysis_start">
+  <hr noshade>
+  <h2>Step 1a - Select Sequences (Paste/Upload)</h2>
+  <hr noshade>
+  <h3>Sequence 1 (sequence of interest)</h3>
+  <span class="text">Paste first sequence (plain text or FastA format):</span>
+  <br>
+  <textarea name="seq1" rows="10" cols="60" wrap="SOFT">[%in_seq1%]</textarea>
+  <br>
+  <br>
+  <span class="text"><b>OR</b> upload first sequence (FastA format):</span>
+  <br>
+  <input type="file" name="seq_file1" size="60" value="[%in_seq_file1%]">
+  <br>
+  <br>
+  <input type="button" name="clear_seq1" value="Clear All" onClick="{select_seqs.seq1.value='';select_seqs.seq_file1.value='';select_seqs.seq_rc1.checked=false}">
+  <br>
+  <br>
+  <hr noshade>
+  <h3>Sequence 2 (orthologous sequence)</h3>
+  <span class="text">Paste second sequence (plain text or FastA format)</span>
+  <br>
+  <textarea name="seq2" rows="10" cols="60" wrap="soft">[%in_seq2%]</textarea>
+  <br>
+  <br>
+  <span class="text"><b>OR</b> upload second sequence (FastA format):</span>
+  <br>
+  <input type="file" name="seq_file2" size="60" value="[%in_seq_file2%]">
+  <br>
+  <br>
+  <input type="button" name="clear_seq2" value="Clear All" onClick="{select_seqs.seq2.value='';select_seqs.seq_file2.value=''}"
+  <br>
+  <br>
+  <hr noshade>
+  <h3>GFF or cDNA (optional - used to define exons positions which are masked from conserved regions)</h3>
+  <br>
+  <span class="text">Paste exon positions (GFF format):</span>
+  <br>
+  <textarea name="gff_text" rows="10" cols="60" wrap="SOFT">[%in_exon_text%]</textarea>
+  <br>
+  <br>
+  <span class="text"><b>OR</b> upload exon position file (GFF format):</span>
+  <br>
+  <input type="file" name="gff_file" size="60" value="[%in_gff_file%]">
+  <br>
+  <br>
+  <span class="text"><b>OR</b> paste cDNA (plain text or FastA format):</span>
+  <br>
+  <textarea name="cdna" rows="10" cols="60" wrap="SOFT">[%in_cdna%]</textarea>
+  <br>
+  <br>
+  <span class="text"><b>OR</b> upload cDNA file (FastA format):</span>
+  <br>
+  <input type="file" name="cdna_file" size="60" value="[%in_cdna_file%]">
+  <br>
+  <br>
+  <input type="button" name="clear_cdna" value="Clear All" onClick="{select_seqs.cdna.value='';select_seqs.cdna_file.value=''}"
+  <br>
+  <br>
+  <hr noshade>
+  <br>
+<!--
+  <input type="reset" name="Reset" value="Reset" align="right">
+  <br>
+-->
+  <input type="submit" name="Submit" value="Continue to Parameter Selection" onClick="javascript:document.select_seqs.rm.value='select_ca_params'">
+  <br>
+  <br>
+  <input type="submit" name="Submit" value="Start Again">
+</form>

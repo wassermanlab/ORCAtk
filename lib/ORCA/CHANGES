@@ -1,0 +1,74 @@
+Aligner.pm (was Orca.pm)
+========================
+12/06/2008
+- Integrated Orca aligner into OrcaTK code heirarchy. The module is now renamed
+  from Orca.pm to Aligner.pm and an ORCA aligner object is instantiated as
+  OrcaTK::Aligner->new().
+
+04/06/2008 (v. 1.1.1)
+- Added bl_filter filter parameter (-F blast parameter) and set default in
+  Aligner.pm to 'F' to prevent blast from automatically filtering query sequence
+  for low complexity repeats (and adding unwanted N's to alignment output).
+
+04/06/2004 (v. 1.0.6)
+- Removed the local alignment parameters -bl_hit_ext_thresh and
+  -bl_x_drop_final as these are not actually used by bl2seq.
+- Changed the way that default parameters are set. Now for the local alignment
+  parameters, only those defaults which are different from the BLAST (bl2seq)
+  defaults are explicitly set if not overriden by user supplied values.
+27/04/2004 (v. 1.0.5)
+- For later versions of Bioperl (1.4+ (1.3+?)) it is necessary to explicitly
+  set the _READMETHOD parameter to 'BPlite' when invoking the
+  Bio::Tools::Run::StandAloneBlast constructor so that the bl2seq method
+  correctly returns a BPbl2seq object and not a SearchIO object. This change
+  was made to the _RunBlast subroutine of Aligner.pm.
+23/02/2004 (v. 1.0.4)
+- The nwalign executable now exits with different non-zero error codes if it
+  fails to make a global alignment. Aligner.pm now checks this code and unless
+  nwalign failed because the input sequences were too long, it causes the whole
+  alignment to fail and returns undef. In the case where nwalign fails because
+  of sequence length, Aligner.pm continues with the overall sequence alignment
+  by laying the two sub-sequences in this region side by side (gapping the
+  shorter).
+10/11/2003 (v. 1.0.3)
+- Took out check for blastn executable.
+- The _RunBlast routine no longer saves the blast report and then re-opens
+  it using BPbl2seq. This was done initially because of a kludgey fix to a bug
+  in which the strand information was not read properly from the report unless
+  the report type was explicitely passed to the new method of BPbl2seq.
+- Added checking to _RunBlast so that if setting up the StandAloneBlast
+  factory fails or if no report is returned from bl2seq, this is treated as
+  a fatal error and the program prints error messages and croaks.
+07/11/2003 (v. 1.0.3)
+- Added _CheckBlast routine to explicitely check for BLAST executables in the
+  'new' method. If the necessary BLAST programs are not found, carps a warning
+  message and returns undef.
+- Actually returns undef if local alignment program (nwalign) is not found.
+  Previously just carped a warning and continued to return an ORCA factory
+  object.
+- Carps and returns undef if temporary directory creation fails.
+
+25/09/2003 (v. 1.0.2)
+- Changed strand information set in alignment returned by ORCA to use 1, 0
+  or -1 rather than +, ? or -.
+
+06/08/2003 (v. 1.0.1)
+- Added method 'align' which is just a pass-through method to 'Align'. This
+  is simply for compatibility with the lowercase method naming conventions
+  of Bioperl.
+
+28/07/2003
+- Explicitly initialize/reset some data members (including orientation) to
+  undef in the Align method.
+- Removed the '(reverse complement)' string which was tacked onto the ID
+  of the second sequence if it was reverse complemented to perform the
+  alignment (+/- orientation). Using the ID field in this way is not reliable
+  as certain alignment formats (i.e. ClustalW) don't preserve anything after
+  the first space in the ID field. Unfortunately, there is no good way to
+  determine if the second sequence was reverse complemented from the alignment
+  file itself.
+- Explicitly set the strand information of the two sequences in the alignment
+  object returned by Aligner->Align. The calling program can now determine the
+  alignment orientation (+/+ or +/-) by examining this strand information in
+  order to verify whether the second sequence was reverse complemented to
+  produce the alignment.

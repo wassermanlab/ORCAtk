@@ -1,0 +1,88 @@
+12/06/2006
+- Separated buildAlignmentMatchArray from the routine which builds the aligment
+  to sequence indexes and vice versa. This routine is now correctly called
+  AFTER the exons are masked.
+- Added new routine writeConservedAlignment which prints out the alignment for
+  a specific conserved region.
+
+14/03/2006
+Many changes to algorithm for computing conserved regions, basically:
+- Exons are masked for computing similarity windows before merging into
+  conserved regions
+  - All overlapping windows are merged if they score >= threshold
+  - After merging, a truncation routine is called to truncate all regions whose
+    score has fallen below threshold until score is again above threshold
+
+21/02/2006
+- Modified the filterRegions routine so that when an exon is removed from a
+  conserved region, the score of the remaining region(s) is checked. If the
+  score falls below the threshold, the region(s) are progressively truncated
+  on the opposite side as the exon, until the score again falls above threshold.
+
+06/06/2005
+- Added a switch -m to control which method of computing percent identity is
+  used. The original method is still the default one.
+- Updated computeSimilarity to take into account which of the above methods is
+  to be employed.
+- Added a new routine, overallPercentageIdentity to compute percent identity
+  the new way. In this new method the scoring window counts gaps in the base
+  sequence in computing the window size. In the old method, gaps in the base
+  sequence were not counted.
+- Changed the way similarity windows are merged into conserved regions. Windows
+  are added to a conserved region if they overlap it and score above threshold.
+  Then the conserved region is checked at the end and if it falls below
+  threshold the similarity windows are removed from the right until the
+  threshold is exceeded. The region is then trimmed at the edges to start/end
+  on a match and rescored.
+
+02/09/2004
+- The conserved regions report now contains the start, end and length of
+  the conserved regions on sequence 2 (comparison sequence). The columns in
+  the report are now:
+      start1 end1 length1 start2 end2 length2 aln_start aln_end identity
+- The header format has also changed and now consistes of the following lines:
+      Sequence 1
+      Sequence 2
+      Window Size
+      Window Increment
+      Computed % Identity
+      Minimum % Identity
+      Effective % Identity
+- A new optional argument, -c, can be specified, indicating that the second
+  sequence was reverse complemented during the alignment program. This is
+  necessary so that align_cons can correctly compute the start and end
+  coordinates on the second sequence.
+
+04/11/2003
+- Integrated the filtering of features from the conserved regions directly
+  into align_cons so that the perl script filter_regions.pl is no longer
+  needed. This is much faster. In order for the align_cons to perform
+  filtering a -g parameter can be passed to it whose argument is the name
+  of a GFF formatted file containing the features (usually exons) to be
+  filtered out of the conserved regions. An optional -l parameter provides
+  the minimum length of a conserved region to report after features have
+  been filtered.
+
+28/10/2003
+- Changed the way the -t (threshold) and -s (stringency) parameters work so
+  that if both are specified, the threshold parameter acts as a default
+  minimum. I.e. a dynamic threshold is computed using the stringency but if
+  it falls below the threshold specified by the -t argument, the threshold
+  specified by the -t parameter overrides the computed threshold. I.e.
+  the -t parameter provides and absolute minimum threshold in this case.
+
+25/07/2003
+- Fixed off-by-one error causing segmentation fault in realloc.
+- Changed default report type to 'c' (conserved regions report).
+- Changed default window increment to 1.
+
+30/07/2003
+- Fixed bug whereby if stringency was set too low, it would result in a
+  dynamic threshold of 0, which would cause the program to crash.
+- Added header information to conserved regions report. Header includes:
+  Sequence 1 ID
+  Sequence 2 ID
+  Window Size
+  Window Increment
+  Top X% Identities (stringency, if -s option supplied)
+  Min. % Identity (threshold)

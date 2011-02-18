@@ -1,0 +1,81 @@
+<html>
+<head>
+  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=iso-8859-15">
+  <link rel="stylesheet" href="/OrcaTK/templates/styles.css" type="text/css">
+  <title>ORCA Toolkit Help</title>
+</head>
+<body>
+  <h1><a name="orcatk_help"></a><center>ORCA Toolkit</center></h1>
+  <h2><a name="overview"></a>Overview</h2>
+  <p class="text">
+  The ORCA Toolkit is a system for finding putative regulatory regions and transcription factor binding sites (TFBSs) within those regions. This is accomplished through phylogenetic footprinting by either aligning orthologous sequences with the ORCA aligner (pairwise analysis) or by extracting a phastCons score profile (multi-species analysis) and then identifying regions of significant identity. These regions may then be scanned with selected TFBS profile matrices. Matrices which score about a given threshold are then reported as putative TFBSs.
+  </p>
+  <h2><a name="select_seqs"></a>Select Sequence Input Method</h2>
+  <p class="text">
+  Each of the sequences may be entered via several methods. A sequence may be searched via gene name/symbol, specified with genomic coordinates or uploaded from a file or pasted directly into the input text box. For the first two sequence selection methods, either pairwise or multi-species (phastCons) analysis is available. The paste/upload option only supports pairwise analysis. These sequence input methods are described in more detail below.
+  </p>
+  <h3><a name="select_seqs_name"></a>Select Sequences by Gene Name/Symbol)</h3>
+  <p class="text">
+  Choose the species of interest and enter a gene name/symbol. ORCAtk retrieves all genes matching the provided name from Ensembl. If more than one gene matching the name is returned, you may select the correct one. You may then choose to perform either pairwise or multi-species (phastCons) analysis. If performing pairwise analysis, you must choose a species for orthologous sequence comparison. See the "Guide to Phylogenetic Footprinting" section below. Once you have chosen a comparison species, ORCAtk automatically selects the orthologous gene. If more than one is returned then you may choose the most relevant. After this you are presented with all the transcripts for each of the two species' genes. Choose the most appropriate transcript and select the amount of upstream and downstream sequence you wish to include. Downstream sequence may be chosen either relative to the transctiption start site (TSS) or the 3' end of the transcript. Once this is completed, prssing the "Submit" button takes you to the "Select Conservation Analysis Parameters" page. For multi-species analysis, you enter similar information for your species/gene or interest but are not required to enter any comparison species information.
+  </P> 
+  <h3><a name="select_seqs_coords"></a>Select Sequences by Genomic Coordinates)</h3>
+  <p class="text">
+  Choose the species of interest and the chromosomal name and start and end positions for the sequence you wish to analyze. You may then choose to perform either pairwise or multi-species (phastCons) analysis. If performing pairwise analysis, you must choose a species for orthologous sequence comparison. See the "Guide to Phylogenetic Footprinting" section below. You must then enter the chromosomal name and start and end positions for the comparison (orthologous) sequence. You may then continue to the "Select Conservation Analysis Parameters" section.
+  </P> 
+  <h3><a name="select_seqs_paste_upload"></a>Select Sequences by Genomic Coordinates)</h3>
+  <p class="text">
+  You may choose your sequence of interest and your orthologous sequence by either pasting the sequences directly into the text boxes or using the "Browse..." buttons to search for and upload sequence files from your computer. You may then optionally also enter either a cDNA or GFF file in a similar manner. This file should define the exon positions on the sequence of interest in order that these regions are not included in conserved regions or the TFBS search.
+  </p>
+  <h2><a name="select_ca_params"></a>Select Conservation Analysis Parameters</h2>
+  <p class="text">
+  You may choose conservation analysis parameter as follows:
+  <p>
+  <b>Top percentile of conserved regions</b> - Pairwise analysis only. This value is used to dynamically compute the percentage identity cutoff above which regions are considered conserved. For example if 10% is selected then the conservation cutoff is computed so that 10% of all the initial scoring window fall above this score. Conserved regions are then identified by merging all scoring windows which score above the computed conservation cutoff. If the minimum conservation identity is also specified (see below) and is greater than this dynamically computed value, then the dynamically computed value is overriden and the minimum conservation becomes the effective percentage identity. Default is 10%.
+  </p>
+  <p>
+  <b>Minimum conservation (identity)</b> - The absolute minimum percentage identity to use as the conservation cutoff. If no value is specified for the top percentile (see above) or if the resulting dynamically computed conservation cutoff is less than this number, then the mimimum conservation is used as the effective percentage identity. Default is 70%.
+  </p>
+  <p>
+  <b>Scoring window size</b> - Pairwise analysis only. The size in nucleotides of the initial sliding window used to score the percentage identity of sequence 1 with respect to sequence 2. Default is 100 nucleotides.
+  </p>
+  <p>
+  <b>Minimum conserved region length</b> - The minimum size of a conserved region to include in the analysis. Regions less than this length are ignored (not reported as conserved regions or searched for TFBSs). Default is 20 nucleotides.
+  </p>
+  <p>
+  <a name="filter_exons"></a><b>Filter exons</b> - If this is checked, exons are excluded from conserved regions and are not searched for TFBSs. This is only meaningful if exon annotation is available either by automatic retrieval from Ensembl or specified by the user with a cDNA or GFF file. This option is on by default.
+  </p>
+  <p>
+  <a name="reverse_graph"></a><b>Reverse graph</b> - If this option is checked then the resulting plot will be oriented in the opposite direction. This is useful if sequence 1 is from a gene which is transcribed on the antisense strand as the resulting conservation profile plot will be oriented such that the left-hand side of the plot corresponds to the 5' end of the sequence.
+  </p>
+  <h2><a name="select_tfs"></a>Select TFBS Profiles</h2>
+  You may select TFBS profiles in several different ways. First, one of the JASPAR TFBS profile databases may be selected and all profiles from this database chosen which have a minimum specificity (information content) of the specified number of bits. Default is 10 bits. Second, specific profiles may be selected from each of the JASPAR TFBS profile databases (multiple choices allowed from each). Third, a file may be specified which contains one or more matrices (see format below). Lastly, a matrix or list of matrices may be pasted into the text box (see format below).
+  </p>
+  <p>
+  <a name="matrix_format"></a>For the file upload and paste options the format is one or more matrices each consisting of a header line beginning with a '<b>></b>' followed by the matrix identifier or name, then four lines with frequency counts. Each line corresponds to the frequency of the nucleotides A, C, G and T and each column is the count at that position. For example,
+  </p>
+  <p>
+  <pre>
+  >NR4A2
+  13 12 17  0  3  2  0 18
+   2  1  0  0  0  3 17  0
+   2  3  1 17 15  0  0  0
+   1  2  0  1  0 13  1  0</pre>
+  </p>
+  <p>
+  <b>TF score threshold</b> - The minimum matrix score above which the site is reported as a putative TFBS. The score is given as a relative score (percentage of the maximum possible score for each matrix). Default is 80%.
+  </p>
+  <p>
+  <b>Limit TFBS search region</b> - If start and/or end values are entered then binding sites are only searched for within the given bounds. These positions are specified as relative coordinates on sequence 1, i.e. the leftmost nucleotide is given as position 1. If no start and end positions are specified, search entire sequence for binding sites. If values are given which are out of range then the values default to the start and end of the sequence.
+  </p>
+  <p>
+  <a name="filter_tfbss"></a><b>Filter overlapping TFBSs</b> - If putative binding sites for a given TF overlap and this option is checked, then only report the highest scoring of the overlapping sites. Otherwise report all binding sites. This option is on by default.
+  </p>
+  <h2><a name="results"></a>Results</h2>
+  <p>
+  The results consist of a summary of the various parameters that were used in the analysis. This is followed by a plot file (PNG format) showing the conservation profile, with the conserved regions, exons (if available) and TFBSs (if selected) displayed. This may be saved to the user's computed by right-clicking on the image and selecting "Save image as...". Below the plot, links are provided to text file of the alignment (pairwise analysis only), conserved regions report, conserved sub-sequences, TF biding site details (if TFBS profiles were selected). These results are also provided as a UCSC browser track formatted file from another link. For convenience, all the above mentioned files are provided under the link "full results" in a compressed archive file (gtar). Finally a direct link is provided to view the results as custom tracks on the UCSC genome browser.
+  </p>
+  <h2><a name="phylo_guide"></a>Guide to Phylogenetic Footprinting</h2>
+  <p>
+  See MS Word document file <a href="http://www.cisreg.ca/ORCAtk/supplemental/Phylo_Foot_Guide_NAR2009.pdf">here</a>.
+  </p>
+</body>

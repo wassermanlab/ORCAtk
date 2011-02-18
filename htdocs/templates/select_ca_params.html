@@ -1,0 +1,46 @@
+<form name="select_ca_params" enctype="multipart/form-data" method="post">
+  <input type="hidden" name="sid" value="[%sid%]">
+  <input type="hidden" name="from" value="select_ca_params">
+  <input type="hidden" name="rm" value="analysis_start">
+  <h2>Step 2 - Select Conservation Analysis Parameters</h2>
+  <hr noshade>
+  <br>
+  <table>
+  [%IF analysis_type == 'pairwise'%]
+  <tr>
+    <td>Scoring window size</td>
+    <td><input type="text" name="window_size" value="[%in_window_size%]" size="3"></td>
+  </tr>
+  <tr>
+    <td>Top percentile of conserved regions</td>
+    <td><input type="text" name="top_percentile" value="[%in_top_percentile%]" size="4">%</td>
+  </tr>
+  [%END%]
+  <tr>
+    <td>Minimum conservation (% identity)</td>
+    <td><input type="text" name="min_conservation" value="[%in_min_conservation%]" size="4">%</td>
+  </tr>
+  <tr>
+    <td>Minimum conserved region length</td>
+    <td><input type="text" name="min_cr_length" size="3" value="[%in_min_cr_length%]"></td>
+  </tr>
+  <tr>
+    <td>Filter exons</td>
+    <td><input type="checkbox" name="filter_exons" [%IF in_filter_exons%]checked[%END%]>&nbsp;(<a href="javascript:newWindow=window.open('[%rel_html_path%]/help.html#filter_exons','help','width=800,height=800,toolbar=1,location=0,directories=0,status=0,menuBar=0,scrollBars=1,resizable=1'); newWindow.focus()">?</a>)</td>
+  </tr>
+  <tr>
+    <td>Reverse graph</td>
+    <td><input type="checkbox" name="flip_graph" [%IF in_flip_graph%]checked[%END%]>&nbsp;(<a href="javascript:newWindow=window.open('[%rel_html_path%]/help.html#reverse_graph','help','width=800,height=800,toolbar=1,location=0,directories=0,status=0,menuBar=0,scrollBars=1,resizable=1'); newWindow.focus()">?</a>)</td>
+  </tr>
+  </table>
+  <br>
+  <hr noshade>
+  <br>
+  <input type="submit" name="Submit" value="Results" onClick="javascript:document.select_ca_params.rm.value='results'">
+  <br>
+  <br>
+  <input type="submit" name="Submit" value="Select TFBS Profiles" onClick="javascript:document.select_ca_params.rm.value='select_tfs'">
+  <br>
+  <br>
+  <input type="submit" name="Submit" value="Start Over">
+</form>

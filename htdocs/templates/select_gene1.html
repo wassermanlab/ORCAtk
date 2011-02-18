@@ -1,0 +1,31 @@
+<form name="select_gene" enctype="multipart/form-data" method="post">
+  <input type="hidden" name="sid" value="[%sid%]">
+  <input type="hidden" name="from" value="select_gene1">
+  <input type="hidden" name="analysis_type" value="">
+  <input type="hidden" name="rm" value="analysis_start">
+  <h2>Step 1b - Select Gene</h2>
+  <hr noshade>
+  Select <b>[%in_species1%]</b> gene:
+  <br>
+  <br>
+  [%first = 1%]
+  [%FOREACH g = in_gene_list%]
+    <input type="radio" name="ensembl_id1" value="[%g.stable_id%]" [%IF first%]checked[%END%]><b>[%g.external_name%]</b> - [%g.description%]<br>
+    [%first = 0%]
+  [%END%]
+  <br>
+  <hr noshade>
+  <br>
+  <input type="submit" name="Submit" value="Multi-species (phastCons) Analysis" onClick="javascript:document.select_gene.rm.value='select_transcript1'; document.select_gene.analysis_type.value='phastcons'">&nbsp;(human/mouse only)
+  <br>
+  <br>
+  <input type="submit" name="Submit" value="Pairwise Analysis" onClick="javascript:document.select_gene.rm.value='select_ortholog'; document.select_gene.analysis_type.value='pairwise'">&nbsp;
+  <select size=1 name=species2>
+    [%FOREACH s = species%]
+      <option value="[%s%]">[%s%]</option>
+    [%END%]
+  </select>&nbsp;&nbsp;<a href="[%rel_html_path%]/supplemental/Phylo_Foot_Guide_NAR2009.pdf">(guide)</a>
+  <br>
+  <br>
+  <input type="submit" name="Submit" value="Start Again">
+</form>

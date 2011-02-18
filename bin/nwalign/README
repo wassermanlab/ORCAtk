@@ -1,0 +1,74 @@
+nwalign
+-------
+	Find best global alignment between two DNA nucleotide sequences using
+	the Needleman-Wunsch algorithm as modified by Gotoh [1982] and with
+	the extra addition of a gap extension penalty parameter.
+
+Usage:
+	nwalign [sequence1 sequence2] | [infile]  match_score mismatch_score
+		gap_penalty gap_ext_penalty outfile
+
+	where:
+		sequence1,
+		sequence2 	= the two nucleotide sequences to be aligned as
+				  strings
+		infile		= name of file containing two nucleotide
+				  sequences to be aligned in either FastA
+				  or plain text (space separated) format
+		match_score	= score applied additively when corresponding
+				  nucleotides within the two sequences match
+		mismatch_score	= score applied additively when corresponding
+				  nucleotides within the two sequences do not
+				  match
+		gap_penalty	= score applied subtractively when a gap must 
+				  be opened to improve alignment between the
+				  two sequences
+		gap_ext_penalty	= score applied subtractively when an existing
+				  gap must be extended to improve alignment
+				  between the two sequences
+		outfile		= name of output file to which alignment is
+				  written
+
+Examples:
+	Align two short sequences with a match score of 3, a mis-match score
+	of -1, a gap open penalty of 5 and a gap extension penalty of 1.
+	Store the result in the file nwalign.out.
+
+	    nwalign ACTGCA CTGGA 3 -1 5 1 nwalign.out
+
+	Align two sequences contained in the fasta file seqs.fa with a match
+	score of 3, a mis-match score of -1, a gap open penalty of 20 and a
+	gap extension penalty of 0. Store the result in the file nwalign.out.
+
+	    nwalign seqs.fa 3 -1 20 0 nwalign.out
+
+Output:
+	The alignment is written to the file specified by outfile. The format
+	is a simplified ClustalW-like format consisting of the two aligned
+	sequences and the homology without headers of labelling.
+	i.e.:
+	GCTACTGCATTAGTATCTATGCTACTGAGTGCCCATTGATGGCTAGGTAG
+	GCTA-------------TAGGCTA-------GCTATTGATG---------
+	****             ** ****        * *******         
+
+	CATCTAGCT-----AGCGATGCTAGCTGGGTCTGAGTGCTAGTGCTG
+	---CGAGCTGATCGAGCGACTGTAG-TCAGTCT-AGT-CTAGTCAGC
+	   * ****     *****   *** *  **** *** *****    
+
+NOTES:
+	The maximum allowable size in bytes of the NW matrix is contained in
+	the header file matrix.h. Modify this value for your particular
+	installation.
+
+ 	All non-ACTGactg, characters (ie masking characters) are scored as an
+	automatic mismatch.
+
+	The program only performs a one-way alignment; one of the sequences
+	must be reverse complemented if this is desired.
+
+BUGS:
+	The separate gap open / gap extension penalty are not implemented
+	correctly. Using the same gap open and gap extension penalty is
+	equivalent to using a linear gap penalty which works correctly.
+	However, using different values for gap open and gap extension penalty
+	will still produce an alignment but it may not be optimal.

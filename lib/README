@@ -1,0 +1,50 @@
+OrcaTK Libraries
+================
+The OrcaTK package now incorporate the following previously separate libraries:
+ConservationAnalysis
+PhastConsAnalysis
+Orca (now renamed Aligner)
+
+Installation
+============
+To install the OrcaTK modules in the standard Perl lib tree:
+
+perl Makefile.PL
+make
+make install
+
+Dependencies
+============
+You must have at least version 1.2 of BioPerl as well as bioperl-run.
+
+You must have NCBI BLAST installed on your machine and the bl2seq executable
+must be somewhere in your path on order to run the ORCA aligner.
+
+You must have at least version 0.5.0 of the TFBS Perl modules for
+transcription factor binding site detection and analysis installed. Available
+from http://tfbs.genereg.net.
+
+You must have the DBI and DBD::mysql perl modules to connect to the JASPAR
+database of transcription factor binding sites in order to perform the TFBS
+analysis.
+
+If you use the software to produce graphical output you must install the GD.pm
+module.
+
+Please note that graphical output also requires my_xyplot.pm which is in
+OrcaTK/lib/Bio. You may need to install this in the standard Bioperl library
+tree under Bio/Graphics/Glyph/my_xyplot.pm.
+
+You may also have to make and install the align_cons and nwalign C programs
+separately:
+
+cd OrcaTK/bin/align_cons
+make
+make install
+
+cd OrcaTK/bin/nwalign
+make
+make install
+
+The make install puts the executables in /usr/local/bin but you may want to
+skip the install step and optionally copy them to somewhere else in your path.

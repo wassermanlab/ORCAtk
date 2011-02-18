@@ -1,0 +1,43 @@
+<form name="select_seq1" enctype="multipart/form-data" method="post">
+  <input type="hidden" name="sid" value="[%sid%]">
+  <input type="hidden" name="from" value="select_seq1_paste_upload">
+  <input type="hidden" name="analysis_type" value="">
+  <input type="hidden" name="rm" value="analysis_start">
+  <hr noshade>
+  <h2>Step 1a - Select Sequence (paste/upload)</h2>
+  <hr noshade>
+  <h3>Sequence</h3>
+  <span class="text">Paste sequence (plain text or FastA format):</span>
+  <br>
+  <textarea name="seq1" rows="10" cols="60" wrap="SOFT">[%in_seq1%]</textarea>
+  <br>
+  <br>
+  <span class="text"><b>OR</b> upload sequence (FastA format):</span>
+  <br>
+  <input type="file" name="seq_file1" size="60" value="[%in_seq_file1%]">
+  <br>
+  <br>
+  <input type="button" name="clear_seq1" value="Clear All" onClick="{select_seq1.seq1.value='';select_seq1.seq_file1.value='';select_seq1.seq_rc1.checked=false}">
+  <br>
+  <br>
+  <hr noshade>
+  <h3>cDNA (optional - used to mask exons from conserved regions)</h3>
+  <br>
+  <span class="text">Paste cDNA (plain text or FastA format):</span>
+  <br>
+  <textarea name="cdna" rows="10" cols="60" wrap="SOFT">[%in_cdna%]</textarea>
+  <br>
+  <br>
+  <span class="text"><b>OR</b> upload cDNA file (FastA format):</span>
+  <br>
+  <input type="file" name="cdna_file" size="60" value="[%in_cdna_file%]">
+  <br>
+  <br>
+  <input type="button" name="clear_cdna" value="Clear All" onClick="{select_seqs.cdna.value='';select_seqs.cdna_file.value=''}"
+  <br>
+  <br>
+  <hr noshade>
+  <input type="submit" name="Submit" value="Multi-species (phastCons) Analysis" onClick="javascript:document.select_seq1.rm.value='select_ca_params'; document.select_seq1.analysis_type.value='phastcons'">&nbsp;(human/mouse only) Continue to Conservation Parameter Selection<br><br>
+  <input type="submit" name="Submit" value="Pairwise Analysis" onClick="javascript:document.select_seq1.rm.value='select_seq2_paste_upload'; document.select_seq1.analysis_type.value='pairwise'">&nbsp;Input orthologous sequence<br><br>
+  <input type="submit" name="Submit" value="Start Again">
+</form>

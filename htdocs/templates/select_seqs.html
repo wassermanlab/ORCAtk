@@ -1,0 +1,77 @@
+<form name="select_seqs" enctype="multipart/form-data" method="post">
+  <h2>Select Sequences</h2>
+  <hr noshade>
+  <h3>Sequence 1</h3>
+  <span class="text">Retrieve first sequence from Ensembl:</span>
+  <br>
+  <span class="subtext">
+  Database:
+  <select size=1 name=seq_db1>
+    [%FOREACH db = ensembl_dbs%]
+      <option value=[%db%] [%IF db == in_seq_db1%]selected[%END%]>[%db%]</option>
+    [%END%]
+  </select>
+  Chr:
+  <input type="text" name="seq_chr1" value="[%in_seq_chr1%]" size="2">
+  Start:
+  <input type="text" name="seq_start1" value="[%in_seq_start1%]" size="12">
+  End:
+  <input type="text" name="seq_end1" value="[%in_seq_end1%]" size="12">
+  </span>
+  <br>
+  <br>
+  <span class="text"><b>OR</b> paste first sequence (plain text or fasta format):</span>
+  <br>
+  <textarea name="seq1" rows="10" cols="60" wrap="SOFT">[%in_seq1%]</textarea>
+  <br>
+  <br>
+  <span class="text"><b>OR</b> upload first sequence (fasta format):</span>
+  <br>
+  <input type="file" name="seq_file1" size="60" value="[%in_seq_file1%]">
+  <br>
+  <input type="checkbox" name="seq_rc1" [%IF in_seq_rc1%]checked[%END%]>Reverse complement (<a href="javascript:newWindow=window.open('[%rel_html_path%]/help.html#reverse_complement','help','width=800,height=800,toolbar=1,location=0,directories=0,status=0,menuBar=0,scrollBars=1,resizable=1'); newWindow.focus()">what's this?</a>)
+  <br>
+  <br>
+  <input type="button" name="clear_seq1" value="Clear All" onClick="{select_seqs.seq1.value='';select_seqs.seq_file1.value='';select_seqs.seq_chr1.value='';select_seqs.seq_start1.value='';select_seqs.seq_end1.value='';select_seqs.seq_rc1.checked=false}">
+  <br>
+  <hr noshade>
+  <h3>Sequence 2</h3>
+  <span class="text">Retrieve second sequence from Ensembl:</span>
+  <br>
+  <span class="subtext">
+  Database:
+  <select size=1 name=seq_db2>
+    [%FOREACH db = ensembl_dbs%]
+      <option value=[%db%] [%IF db == in_seq_db2%]selected[%END%]>[%db%]</option>
+    [%END%]
+  </select>
+  Chr:
+  <input type="text" name="seq_chr2" value="[%in_seq_chr2%]" size="2">
+  Start:
+  <input type="text" name="seq_start2" value="[%in_seq_start2%]" size="12">
+  End:
+  <input type="text" name="seq_end2" value="[%in_seq_end2%]" size="12">
+  </span>
+  <br>
+  <br>
+  <span class="text"><b>OR</b> paste second sequence (plain text or fasta format)</span>
+  <br>
+  <textarea name="seq2" rows="10" cols="60" wrap="SOFT">[%in_seq2%]</textarea>
+  <br>
+  <br>
+  <span class="text"><b>OR</b> upload second sequence (fasta format):</span>
+  <br>
+  <input type="file" name="seq_file2" size="60" value="[%in_seq_file2%]">
+  <br>
+  <br>
+  <input type="button" name="clear_seq2" value="Clear All" onClick="{select_seqs.seq2.value='';select_seqs.seq_file2.value='';select_seqs.seq_chr2.value='';select_seqs.seq_start2.value='';select_seqs.seq_end2.value=''}"
+  <br>
+  <br>
+  <input type="hidden" name="sid" value="[%sid%]">
+  <input type="hidden" name="from" value="select_seqs">
+  <input type="hidden" name="rm" value="select_ca_params">
+  <input type="reset" name="Reset" value="Reset">
+  <br>
+  <input type="submit" name="Submit" value="Select Parameters">
+  <input type="submit" name="Submit" value="Select TFs" onClick="javascript:document.select_seqs.rm.value='select_tfs'; return true;">
+</form>

@@ -1,0 +1,23 @@
+Scripts
+=======
+
+orcatk_pairwise.pl
+------------------
+Under the scripts directory, the orcatk_pairwise.pl script performs the basic
+pairwise analysis.
+
+For orcatk_pairwise.pl usage, run the script without any arguments.
+
+orcatk_phastcons.pl
+------------------
+The orcatk_phastCons.pl script performs a similar analysis to
+orcatk_pairwise.pl, however, instead of computing a pairwise alignment and
+a conservation profile, it instead directly extracts a phastCons score profile.
+
+For orcatk_phastCons.pl usage, run the script without any arguments.
+
+orcatk_aligner.pl
+-----------------
+Align two DNA sequences using progressive global alignment.
+
+For orcatk_aligner.pl usage, run the script without any arguments.

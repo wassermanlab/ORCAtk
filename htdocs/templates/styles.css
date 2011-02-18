@@ -1,0 +1,77 @@
+h1 {
+        color: #3300cc;
+        font-family: Verdana, Arial, Helvetica,  sans-serif;
+        font-size: 24px;
+        font-style: normal;
+        line-height: normal;
+        font-weight: bold;
+        text-align: center;
+}
+
+h2 {
+        font-family: Verdana, Arial, Helvetica, sans-serif;
+        font-size: 20px;
+        font-weight: normal;
+        color: #3300cc;
+        text-align: left;
+}
+h3 {
+        font-family: Verdana, Arial, Helvetica, sans-serif;
+        font-size: 16px;
+        font-weight: bold;
+        color: #666666;
+}
+h4 {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+        font-size: 10pt;
+        font-weight: bold;
+        color: #3300cc
+}
+.th {
+	font-family: Verdana, Arial, Helvetica, sans-serif; 
+	font-size: 12px; 
+	font-style: normal; 
+	font-weight: bold; color: #000000;
+}
+.td {
+	font-family: Verdana, Arial, Helvetica, sans-serif; 
+	font-size: 10px; 
+	font-style: normal; 
+	font-weight: normal; 
+	color: #000000;
+}
+.text {
+	font-family: Verdana, Arial, Helvetica, sans-serif; 
+	font-size: 14px;
+}
+.subtext {
+	font-family: Verdana, Arial, Helvetica, sans-serif; 
+	font-size: 12px;
+}
+.menu {
+	font-family: Verdana, Arial, Helvetica, sans-serif; 
+	font-size: 14px; 
+	font-weight: bold; 
+	cursor: text;
+}
+.table_title {
+	font-family: Verdana, Arial, Helvetica, sans-serif; 
+	font-size: 12px; 
+	font-style: normal; 
+	font-weight: bold; color: #000000;
+}
+.table_text {
+	font-family: Verdana, Arial, Helvetica, sans-serif; 
+	font-size: 10px; 
+	font-style: normal; 
+	font-weight: normal; 
+	color: #000000;
+}
+.warn_text {
+	font-family: Verdana, Arial, Helvetica, sans-serif; 
+	font-size: 10px; 
+	color: #FF0000;
+}
+a img {
+	border: 0;
+}

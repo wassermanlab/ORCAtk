@@ -1,0 +1,251 @@
+<script language="JavaScript">
+<!-- BEGIN script hiding
+function isblank(s)
+{
+    for (var i = 0; i < s.length; i++) {
+        var c = s.charAt(i);
+	if ((c != ' ') && (c != '\n') && (c != '\t')) return false;
+    }
+    return true;
+}
+
+function verify(f)
+{
+    var msg;
+    var errors = "";
+
+    if (isblank(f.seq1)) {
+    	if (isblank(f.chr1) || isblank(f.start1) || isblank(f.end1)) {
+	    errors += "Please paste or select coordinates for sequence 1\n";
+	}
+    } else {
+    	if (!isblank(f.chr1) || !isblank(f.start1) || !isblank(f.end1)) {
+	    errors += "Please EITHER paste a sequence OR select coordinates for sequence 1\n";
+	}
+    }
+
+    if (isblank(f.seq2)) {
+    	if (isblank(f.chr2) || isblank(f.start2) || isblank(f.end2)) {
+	    errors += "Please paste or select coordinates for sequence 2\n";
+	}
+    } else {
+    	if (!isblank(f.chr2) || !isblank(f.start2) || !isblank(f.end2)) {
+	    errors += "Please EITHER paste a sequence OR select coordinates for sequence 2\n";
+	}
+    }
+    
+    if (isblank(f.min_conservation) {
+	var v = parseFloat(f.min_ic.value);
+	if (isNaN(v)) {
+	    errors += "Minimum specificity is not a valid number\n";
+	} else {
+	    if (v < [%db_build_info.min_pwm_ic%]) {
+		errors += "Minimum specificity is below minimum allowable";
+		errors += " [%db_build_info.min_pwm_ic%] bits\n";
+	    }
+	}
+    } else if (f.tfbs_type[1].checked) {
+    	if (!f.phylum[0].checked && !f.phylum[1].checked
+		&& !f.phylum[2].checked)
+	{
+	    errors += "No taxonomic supergroups were selected\n";
+	}
+    } else if (f.tfbs_type[2].checked) {
+    	var tfs_selected = false;
+    	for (var i = 0; i < f.tfs.options.length; i++) {
+	    if (f.tfs.options[i].selected) {
+	    	tfs_selected = true;
+		break;
+	    }
+	}
+	if (!tfs_selected) {
+	    errors += "No specific profiles were selected\n";
+	}
+    }
+
+    if (!errors) return true;
+
+    msg = "_________________________________________________________\n\n";
+    msg += "The analysis was not submitted due to the following problem(s).\n";
+    msg += "Please correct these problem(s) and re-submit.\n";
+    msg += "________________________________________________________\n\n";
+    msg += errors;
+    alert(msg);
+    return false;
+}
+// END script hiding -->
+</script>
+
+<form name="input" enctype="multipart/form-data" method="post" onSubmit="return verify(this)">
+  <span class="title">Select Conservation/TFBS Search Parameters</span>
+  <br>
+  <span class="subtitle">Enter input sequences</span>
+  <br>
+  Paste first sequence
+  <br>
+  <textarea name="sequence1" rows=10 cols=60 wrap=SOFT>[%in_seq1%]</textarea>
+  <br>
+  <span class="text">OR retrieve sequence from Ensembl</span>
+  <br>
+  <select size=1 name=ensembl_db1>
+    [%FOREACH db = ensembl_dbs%]
+      <option value=[%db%]>[%db%][%IF db == in_ensembl_db1%] selected[%END%]</option>
+    [%END%]
+  </select>
+  <input type="text" name="chr1" value=[%in_chr1%] size="2">
+  <input type="text" name="start1" value=[%in_start1%] size="12">
+  <input type="text" name="end1" value=[%in_end1%] size="12">
+  <br>
+  Paste second sequence</span>
+  <br>
+  <textarea name="sequence2" rows=10 cols=60 wrap=SOFT>[%in_seq2%]</textarea>
+  <br>
+  <span class="text">OR retrieve sequence from Ensembl</span>
+  <br>
+  <select size=1 name=ensembl_db2>
+    [%FOREACH db = ensembl_dbs%]
+      <option value=[%db%]>[%db%][%IF db == in_ensembl_db2%] selected[%END%]</option>
+    [%END%]
+  </select>
+  <input type="text" name="chr2" value=[%in_chr2%] size="2">
+  <input type="text" name="start2" value=[%in_start2%] size="12">
+  <input type="text" name="end2" value=[%in_end2%] size="12">
+  <br>
+  <br>
+  <span class="subtitle">Select TFBS profiles</span>
+  <br>
+  <select size=3 name=tfbs_db>
+    [%FOREACH db = tfbs_dbs%]
+      <option value=[%db%]>[%db%][%IF db == in_tfbs_db%] selected[%END%]</option>
+    [%END%]
+  </select>
+
+ 
+
+
+
+    <span class="text"><b>Gene ID type:</b></span><br>
+    <span class="subtext">
+    <input type="radio" name="id_type" value="0" checked>Ensembl
+    [%FOREACH egit = egits%]
+      <input type="radio" name="id_type" value=[%egit.id_type()%]>[%egit.name()%]
+    [%END%]
+    </span>
+    <br><br>
+    <input type="radio" name="id_input_method" value="paste" checked>
+    <span class="text">Paste gene IDs:</span><br>
+    <input type="button" name="use_sample_genes" value="Use sample genes"
+      onClick="{possum_input.id_input_method[0].checked=true; possum_input.gene_list.value='ENSG00000138435\nENSG00000135902\nENSG00000108556\nENSG00000159251\nENSG00000104879\nENSG00000175084\nENSG00000181856\nENSG00000111046\nENSG00000129152\nENSG00000168530\nENSG00000082627\nENSG00000114854\nENSG00000159173\nENSG00000166094\nENSG00000143632'}">
+    <input type="button" name="clear_gene_ids" value="Clear"
+      onClick="{possum_input.gene_list.value=''}">
+    <br>
+    <textarea name="gene_list" rows=5 cols=50 wrap=SOFT
+      onFocus="{possum_input.id_input_method[0].checked=true}"
+      onChange="{
+	if (!isblank(possum_input.gene_list.value))
+	  {possum_input.id_input_method[0].checked=true}
+	else if (!isblank(possum_input.gene_file.value))
+	  {possum_input.id_input_method[1].checked=true}}">[%FOREACH input_gene_id = input_gene_ids%][%input_gene_id%]&#10;[%END%]</textarea>
+    <br><br>
+    <input type="radio" name="id_input_method" value="upload">
+    <span class="text"><b>OR</b> upload a file containing a list of gene identifiers:</span><br>
+    <span class="subtext">
+    <input type="file" name="gene_file" size="40"
+      onClick="{possum_input.id_input_method[1].checked=true}"
+      onFocus="{possum_input.id_input_method[1].checked=true}"
+      onChange="{
+	if (!isblank(possum_input.gene_file.value))
+	  {possum_input.id_input_method[1].checked=true}
+	else if (!isblank(possum_input.gene_list.value))
+	  {possum_input.id_input_method[0].checked=true}}">
+    </span>
+  </p>
+  <hr noshade><br>
+  <span class="subtitle">STEP 2: Select transcription factor binding site matrices</span> 
+  <p> 
+    <input type="radio" name="tfbs_type" value="all" checked>
+    <span class="text">All profiles with a minimum specificity of
+    <input type="text" name="min_ic" value=[%db_build_info.min_pwm_ic()%]
+      size="2" onFocus="{possum_input.tfbs_type[0].checked=true}"> bits (min. [%db_build_info.min_pwm_ic()%] bits)
+    </span>
+    <br><br>
+    <input type="radio" name="tfbs_type" value="group">
+    <span class="text"><b>OR</b> select by taxonomic supergroup:</span><br> 
+    <span class="subtext">
+    [%FOREACH phylum = phylums%]
+      <input type="checkbox" name="phylum" value=[%phylum%]
+	onClick="{if (checked) {possum_input.tfbs_type[1].checked=true}}">[%phylum%]&nbsp;
+    [%END%]
+    </span>
+    <br><br>
+    <input type="radio" name="tfbs_type" value="specific">
+    <span class="text"><b>OR</b> select specific profiles:</span><br>
+    <select multiple size=8 name=tfs
+      onFocus="{possum_input.tfbs_type[2].checked=true}">
+      [%FOREACH tf = tfs%]
+        <option value=[%tf.id()%]>[%tf.name()%]</option>
+      [%END%]
+    </select>
+  <p>
+  <hr noshade><br>
+  <span class="subtitle">STEP 3: Select parameters</span><br>
+  <p>
+    <span class="text">Level of conservation:</span><br>
+    <select name="conservation_level">
+      [%num_levels = cls.num_levels()%]
+      [%cl_idx = 0%]
+      [%WHILE cl_idx < num_levels%]
+	[%cl = cls.get_conservation_level(cl_idx)%]
+	<option value=[%cl.level()%][%IF cl.level() == 3%] selected[%END%]>Top [%cl.top_percentile()%]% of conserved regions (min. conservation [%cl.min_percentage()%]%)</option>
+	[%cl_idx = cl_idx + 1%]
+      [%END%]
+    </select>
+    <br><br>
+    <span class="text">Matrix match threshold:<br>
+    <select name="threshold_level">
+      [%num_levels = tls.num_levels()%]
+      [%tl_idx = 0%]
+      [%WHILE tl_idx < num_levels%]
+	[%tl = tls.get_threshold_level(tl_idx)%]
+	<option value=[%tl.level()%][%IF tl.level() == 2%] selected[%END%]>[%tl.threshold()%]</option>
+	[%tl_idx = tl_idx + 1%]
+      [%END%]
+    </select>%</span>
+    <br><br>
+    <span class="text">Amount of upstream / downstream sequence:</span><br>
+    <select name="search_region_level">
+      [%num_levels = srls.num_levels()%]
+      [%srl_idx = 0%]
+      [%WHILE srl_idx < num_levels%]
+	[%srl = srls.get_search_region_level(srl_idx)%]
+	<option value=[%srl.level()%][%IF srl.level() == 1%] selected[%END%]>[%srl.upstream_bp()%] / [%srl.downstream_bp()%]</option>
+	[%srl_idx = srl_idx + 1%]
+      [%END%]
+    </select>
+    <br><br>
+    <!--
+    <span class="text">Statistical measure for over-representation:</span><br>
+    <select name="analysis_method">
+      <option value="zscore">Z-score</option>
+      <option value="fisher">One-tailed Fisher Exact Probability</option>
+      <option value="both" selected>Both</option>
+    </select>
+    <br><br>
+    -->
+    <span class="text">Number of results to display:</span><br>
+    <select name="num_display_results">
+      <option value="5">5</option>
+      <option value="10" selected>10</option>
+      <option value="20">20</option>
+      <option value="999">All</option>
+    </select>
+    <br><br>
+  </p>
+  <p class="text"> 
+    Press the <b>Submit</b> button to perform the analysis or <b>Reset</b> to reset the analysis parameters to their default values. Depending on server load, the analysis may take anywhere from a few seconds to a minute or more to perform. Please be patient.<br>
+    <input type="submit" name="Submit" value="Submit">
+    <input type="reset" name="Reset" value="Reset">
+    <input type="hidden" name="rm" value="results">
+    <br>
+  </p>
+</form>

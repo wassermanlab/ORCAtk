@@ -1,0 +1,34 @@
+<form name="select_seq2" enctype="multipart/form-data" method="post">
+  <input type="hidden" name="sid" value="[%sid%]">
+  <input type="hidden" name="from" value="select_seq2_coords">
+  <input type="hidden" name="rm" value="analysis_start">
+  <h2>Step 1b - Select Orthologous Sequence (by genomic coordinates)</h2>
+  <hr noshade>
+  <h3>Orthologous Sequence</h3>
+  <span class="text">Retrieve orthologous sequence from Ensembl:</span>
+  <br>
+  <span class="subtext">
+  Species:
+  <select size=1 name=species2>
+    [%FOREACH spec = species%]
+      <option value=[%spec%] [%IF spec == in_species2%]selected[%END%]>[%spec%]</option>
+    [%END%]
+  </select>
+  Chr:
+  <input type="text" name="seq_chr2" value="[%in_seq_chr2%]" size="8">
+  Start:
+  <input type="text" name="seq_start2" value="[%in_seq_start2%]" size="12">
+  End:
+  <input type="text" name="seq_end2" value="[%in_seq_end2%]" size="12">
+  </span>
+  <br>
+  <br>
+  <input type="button" name="clear_seq2" value="Clear All" onClick="{select_seq2.seq_chr2.value='';select_seq2.seq_start2.value='';select_seq2.seq_end2.value=''}"
+  <br>
+  <hr noshade>
+  <br>
+  <input type="submit" name="Submit" value="Continue to Conservation Parameter Selection" onClick="javascript:document.select_seq2.rm.value='select_ca_params'">
+  <br>
+  <br>
+  <input type="submit" name="Submit" value="Start Again">
+</form>

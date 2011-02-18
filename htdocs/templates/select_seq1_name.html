@@ -1,0 +1,29 @@
+<form name="select_seq1" enctype="multipart/form-data" method="post">
+  <input type="hidden" name="sid" value="[%sid%]">
+  <input type="hidden" name="from" value="select_seq1_name">
+  <input type="hidden" name="rm" value="analysis_start">
+  <h2>Step 1a - Select Sequence (by gene name/symbol)</h2>
+  <hr noshade>
+  <br>
+  <span class="text">Search by gene name/symbol:</span>
+  <br>
+  <br>
+  <span class="subtext">
+  Species:
+  <select size=1 name=species1>
+    [%FOREACH s = species%]
+      <option value="[%s%]" [%IF s == in_species1%]selected[%END%]>[%s%]</option>
+    [%END%]
+  </select>
+  &nbsp;&nbsp;
+  Gene name/symbol: <input type="text" name="gene_name" value="[%in_gene_name%]" size="40">
+  <input type="checkbox" name="use_wildcards" checked> use wildcards (not yet implemented)
+  <br>
+  <br>
+  <hr noshade>
+  <br>
+  <input type="submit" name="Submit" value="Search" onClick="javascript:document.select_seq1.rm.value='select_gene1'">
+  <br>
+  <br>
+  <input type="submit" name="Submit" value="Start Again">
+</form>
