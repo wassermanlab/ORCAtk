@@ -122,10 +122,19 @@ The following software and databases are required by ORCAtk.
 
 Accessing/Downloading Wasserman Lab Databases
 ---------------------------------------------
-It is possible to the various databases required directly from the Wasserman
-lab DB servers. All databases have a "read-only" (i.e. select privilege) user
-which does not require a password. You may use the mysqldump facility to dump
-the databases to you local machine for creating your one local DBs.
+The Wasserman lab maintains an ftp site at cisreg.ca.
+
+The ensembl_databases DB is available under:
+	/pub/pazar/ensembl_databases_mysql.tar.gz
+
+The JASPAR database is available under:
+	/pub/JASPAR/JASPAR_2010.sql.tar.gz
+
+
+It *may* also be possible to dump some of the other databases required directly
+from the Wasserman lab DB servers using the mysqldump facility. All databases
+have a "read-only" (i.e. select privilege) user which does not require a
+password. Note: this method is not guaranteed to work.
 
 The Ensembl core and compara databases as well as the "ensembl_databases" DB
 are all hosted on the server vm2.cmmt.ubc.ca and can be accessed via user
