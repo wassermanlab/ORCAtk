@@ -1,0 +1,22 @@
+ORCAtk - The ORCA Toolkit v1.0.0.
+
+The ORCA toolkit provides a web-based interface and command line scripts to
+detect putative conserved transcription factor binding sites (TFBSs).
+
+For installation instructions please see the INSTALL file.
+
+For more information on specific ORCAtk components please see README files in
+individual subdirectories.
+
+Subdirectories are:
+bin:		Contains C programs which must be compiled and installed
+		into the standard path for the pairwise alignment option of
+		ORCAtk
+cgi-bin:	Contains the main ORCAtk cgi script for running the web-based
+		version of ORCAtk
+htdocs:		Contains HTML, HTML templates, images and supplemental data
+		files for web-based ORCAtk
+lib:		Contains ORCAtk perl modules for use by both web-based and
+		command-line ORCAtk applications
+scripts:	Contains the ORCAtk command-line analyses scripts and utility
+		scripts

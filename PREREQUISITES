@@ -1,0 +1,140 @@
+ORCAtk Prerequisites
+--------------------
+
+The following software and databases are required by ORCAtk.
+
+1) The bioperl library
+
+   The bioperl library available at:
+   	http://www.bioperl.org/wiki/Getting_BioPerl
+
+   At least version 1.4 is required.
+
+2) The TFBS perl library
+
+   This is available at:
+   	http://tfbs.genereg.net
+
+3) Perl modules
+
+   The folowing perl modules must be installed:
+	CGI
+   	CGI::Application
+	DBI
+	DBD::MySQL
+	GD
+
+   These should all be available through cpan.
+
+4) hgWiggle program
+
+   This program is part of the Jim Kent (UCSC) source tree which may be
+   downloaded directly from:
+   	http://hgdownload.cse.ucsc.edu/admin/jksrc.zip
+
+   For general information on downloading and using the UCSC source and data
+   see:
+   	http://hgdownload.cse.ucsc.edu/downloads.html
+
+   You only need to compile the hgWiggle program but it may be easier to
+   compile the entire source tree. After compiling hgWiggle you need to place
+   it somewhere in your path, e.g. /usr/local/bin.
+
+5) UCSC species databases
+
+   For each of the species DBs, ORCAtk only requires the phastCons table.
+   It is not necessary to recreate the entire UCSC database for each species,
+   e.g. for human genome assembly GRCh37, create a DB called hg19 containing
+   the phastCons46wayPlacental table. The Wasserman lab version of ORCAtk
+   currently only supports multi-species (phastCons) analysis for human and
+   mouse (hg19 and mm9) but you can follow the same process to enable
+   multi-species analysis for whichever species you wish, as long as it has
+   phastCons data at UCSC.
+
+   e.g., for the human hg19 (placental mammals) phastCons table data, ftp to:
+   	hgdownload.cse.ucsc.edu/goldenPath/hg19/database
+
+   Download the files phastCons46wayPlacental.sql (table definition) and
+   phastCons46wayPlacental.txt.gz (table data). Create a MySQL database
+   called hg19 and create and populate the phastCons46wayPlacental table
+   using the definition/data files above.
+
+   Alternatively you may download these databases from the Wasserman lab
+   (see below).
+   
+   The phastCons table indexes data contained in a flat file, so you need to
+   download this file to a local directory. Again for the human hg19 data
+   the file required is:
+   	/gbdb/hg19/multiz46way/phastCons46wayPlacental.wib
+
+   Now you have to make sure that the path referred to in "file" field of
+   the phastCons DB table matches the path to the local wib file. Either
+   do a global replace on the contents of the "file" field or set up symbolic
+   links to the local file to match the path in the DB table, e.g.
+
+6) Ensembl species (core) databases
+
+   The versions used should match the version of the API installed below in
+   step 8. It is possible to just link to the ones hosted at the Sanger
+   Institute or the Wasserman lab (see below) but this may be slow.
+   
+   To download and install your own local copies, ftp to:
+	ftp.ensembl.org/pub/release-##/mysql/
+   where ## is the Ensembl version number of the database (and corresponding
+   API).
+
+   Alternatively you may download these databases from the Wasserman lab
+   (see below).
+
+   Install databases for whichever species you want to support in your
+   installation of ORCAtk.
+
+   IMPORTANT: You must make sure that the assembly used in the Ensembl database
+   matches the assembly in the UCSC database, e.g. Ensembl's
+   homo_sapiens_core_61_37f DB and UCSC's hg19 are both based on the GRCh37
+   human genome assembly.
+
+7) Ensembl compara database
+
+   ORCAtk uses some of the tables in the Ensembl compara database for mapping
+   orthologous genes. The compara database is available in the same location
+   as the Ensembl core databases above.
+
+   This is quite a large database and only a few tables are needed. Minimally
+   you need the following tables: genome_db, homology, homology_member, member,
+   meta, method_link, method_link_species_set and species_set.
+
+8) Ensembl perl API
+
+   The API and installation instructions are available at:
+	http://www.ensembl.org/info/docs/api/api_installation.html
+
+   The version of the API used should match the version of the Ensembl core and
+   compara databases used in steps 6 and 7 above.
+
+9) The JASPAR DB of transcription factor binding site profiles is required by
+   ORCAtk. This may be downloaded from the Wasserman lab (see section below).
+
+10) Access to a DB called "ensembl_databases". This is required to map the
+   species names to the appropriate Ensembl DB. It may be downloaded from the
+   Wasserman lab (see secton below).
+
+
+Accessing/Downloading Wasserman Lab Databases
+---------------------------------------------
+It is possible to the various databases required directly from the Wasserman
+lab DB servers. All databases have a "read-only" (i.e. select privilege) user
+which does not require a password. You may use the mysqldump facility to dump
+the databases to you local machine for creating your one local DBs.
+
+The Ensembl core and compara databases as well as the "ensembl_databases" DB
+are all hosted on the server vm2.cmmt.ubc.ca and can be accessed via user
+called "ensembl_r".
+
+All other databases are hosted on vm5.cmmt.ubc.ca. The specific DBs required
+and the MySQL user are:
+
+DB		User
+--------------	------
+JASPAR_2010	jaspar_r
+hg19, mm8 etc.	ucsc_r		(UCSC databases for phastCons)

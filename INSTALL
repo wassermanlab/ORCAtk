@@ -1,0 +1,66 @@
+ORCAtk Installation Instructions
+--------------------------------
+
+Installation instructions for ORCAtk. Please also see the DEPENDENCIES file
+for a list of prerequisite databases, programs and libraries that are required
+by ORCAtk.
+
+1) Compile and install the nwalign and align_cons C programs under the bin
+   sub-directory. Follow the instructions in the INSTALL files under
+   bin/nwalign and bin/align_cons.
+
+2) For web-based ORCAtk, set up symbolic links from your webserver htdocs and
+   cgi-bin directories. For example if you have installed ORCAtk under a
+   directory /apps then assuming you are using the Apache server installed in
+   /usr/local/apache you would use something like the following:
+
+    ln -s /apps/ORCAtk/cgi-bin /usr/local/apache/cgi-bin/ORCAtk
+    ln -s /apps/ORCAtk/htdocs /usr/local/apache/htdocs/ORCAtk
+
+   You may have to edit your apache config file (httpd.conf) to allow following
+   of symbolic links and executing cgi-bin files, e.g.:
+    <Directory "/usr/local/apache/cgi-bin">
+        AllowOverride FileInfo
+        Options FollowSymLinks +ExecCGI +Includes
+        Order allow,deny
+        Allow from all
+    </Directory>
+
+   Alternatively, of course you could copy the ORCAtk htdocs and cgi-bin
+   directories directly into the apache tree.
+
+4) For web-based ORCAtk, edit the configuration constants in the
+   lib/ORCA/Web/Options.pm file to reflect your installation. Specifically
+   you should edit ORCA_HOME constant to point to the directory under which
+   ORCAtk is installed.
+   
+   Edit the paths to the various installed libraries and modules
+   (ENSEMBL_LIB etc.) and the absolute paths to htdocs and cgi-bin.
+
+   Edit the SPECIES_TRACK_NAMES hash which maps species name to the name of
+   the corresponding UCSC phastCons track/table name. This also controls for
+   which species ORCAtk support multi-species analysis.
+
+   Edit the various DB constants to reflect the connection parameters to each
+   of the databases (Ensembl, JASPAR, UCSC etc).
+
+   It is possible to edit other values to reflect different default values
+   for the ORCAtk analysis.
+
+5) The hgWiggle program used by ORCAtk to retrieve phastCons scores requires
+   a configuration file specifying the UCSC database connection parameters.
+   For web-based ORCAtk this configuration file is called hg.conf and must be
+   created in the ORCAtk/cgi-bin and configured to reflect your specific
+   UCSC database installation.
+
+   An example of the contents of this file is:
+
+       db.host=vm5.cmmt.ubc.ca
+       db.user=ucsc_r
+       db.password=
+       browser.documentRoot=/usr/local/apache/htdocs
+
+   NOTE: the permissions of the hg.conf file should be set to 600.
+
+   If you are running the stand-alone analysis scripts you must create the
+   file .hg.conf (in this case, note the leading '.') in your home directory.
