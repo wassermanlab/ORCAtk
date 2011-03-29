@@ -5,17 +5,17 @@ Installation instructions for ORCAtk. Please also see the DEPENDENCIES file
 for a list of prerequisite databases, programs and libraries that are required
 by ORCAtk.
 
-1) Compile and install the nwalign and align_cons C programs under the bin
-   sub-directory. Follow the instructions in the INSTALL files under
-   bin/nwalign and bin/align_cons.
+1) Compile and install the C programs, nwalign and align_cons under the
+   bin sub-directory. Follow the instructions in the INSTALL files under
+   the bin/nwalign and bin/align_cons sub-directories.
 
 2) For web-based ORCAtk, set up symbolic links from your webserver htdocs and
    cgi-bin directories. For example if you have installed ORCAtk under a
    directory /apps then assuming you are using the Apache server installed in
    /usr/local/apache you would use something like the following:
 
-    ln -s /apps/ORCAtk/cgi-bin /usr/local/apache/cgi-bin/ORCAtk
-    ln -s /apps/ORCAtk/htdocs /usr/local/apache/htdocs/ORCAtk
+    $ ln -s /apps/ORCAtk/cgi-bin /usr/local/apache/cgi-bin/ORCAtk
+    $ ln -s /apps/ORCAtk/htdocs /usr/local/apache/htdocs/ORCAtk
 
    You may have to edit your apache config file (httpd.conf) to allow following
    of symbolic links and executing cgi-bin files, e.g.:
@@ -29,7 +29,7 @@ by ORCAtk.
    Alternatively, of course you could copy the ORCAtk htdocs and cgi-bin
    directories directly into the apache tree.
 
-4) For web-based ORCAtk, edit the configuration constants in the
+3) For web-based ORCAtk, edit the configuration constants in the
    lib/ORCA/Web/Options.pm file to reflect your installation. Specifically
    you should edit ORCA_HOME constant to point to the directory under which
    ORCAtk is installed.
@@ -47,7 +47,7 @@ by ORCAtk.
    It is possible to edit other values to reflect different default values
    for the ORCAtk analysis.
 
-5) The hgWiggle program used by ORCAtk to retrieve phastCons scores requires
+4) The hgWiggle program used by ORCAtk to retrieve phastCons scores requires
    a configuration file specifying the UCSC database connection parameters.
    For web-based ORCAtk this configuration file is called hg.conf and must be
    created in the ORCAtk/cgi-bin and configured to reflect your specific

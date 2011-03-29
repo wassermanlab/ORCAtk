@@ -1,5 +1,5 @@
-ORCAtk Prerequisites
---------------------
+ORCAtk Dependencies
+-------------------
 
 The following software and databases are required by ORCAtk.
 
@@ -8,7 +8,7 @@ The following software and databases are required by ORCAtk.
    The bioperl library available at:
    	http://www.bioperl.org/wiki/Getting_BioPerl
 
-   At least version 1.4 is required.
+   ORCAtk has been tested with version 1.4.
 
 2) The TFBS perl library
 
@@ -20,9 +20,12 @@ The following software and databases are required by ORCAtk.
    The folowing perl modules must be installed:
 	CGI
    	CGI::Application
-	DBI
+	Data::Dumper
 	DBD::MySQL
+	DBI
+	File::Temp
 	GD
+	Template
 
    These should all be available through cpan.
 
@@ -72,6 +75,11 @@ The following software and databases are required by ORCAtk.
    do a global replace on the contents of the "file" field or set up symbolic
    links to the local file to match the path in the DB table, e.g.
 
+   Finally, you have to create a "read-only" DB user called "ucsc_r" with
+   select priveleges on each of the UCSC species DBs, e.g.:
+
+    mysql> grant select on hg19.* to ucsc_r@'%'; (etc...)
+
 6) Ensembl species (core) databases
 
    The versions used should match the version of the API installed below in
@@ -89,6 +97,11 @@ The following software and databases are required by ORCAtk.
    Install databases for whichever species you want to support in your
    installation of ORCAtk.
 
+   Create a "read-only" DB user called "ensembl_r" with select priveleges on
+   each of the Ensembl core DBs, e.g.:
+
+    mysql> grant select on homo_sapiens_core_61_37f.* to ensembl_r@'%'; (etc...)
+
    IMPORTANT: You must make sure that the assembly used in the Ensembl database
    matches the assembly in the UCSC database, e.g. Ensembl's
    homo_sapiens_core_61_37f DB and UCSC's hg19 are both based on the GRCh37
@@ -103,6 +116,10 @@ The following software and databases are required by ORCAtk.
    This is quite a large database and only a few tables are needed. Minimally
    you need the following tables: genome_db, homology, homology_member, member,
    meta, method_link, method_link_species_set and species_set.
+
+   Grant the select privilege to the ensembl_r user for the compara database.
+
+    mysql> grant select on ensembl_compara_61.* to ensembl_r@'%';
 
 8) Ensembl perl API
 
@@ -119,6 +136,11 @@ The following software and databases are required by ORCAtk.
    species names to the appropriate Ensembl DB. It may be downloaded from the
    Wasserman lab (see secton below).
 
+   Grant the select privilege to the ensembl_r user for the ensembl_databases
+   database.
+
+    mysql> grant select on ensembl_databases.* to ensembl_r@'%';
+
 
 Accessing/Downloading Wasserman Lab Databases
 ---------------------------------------------
@@ -134,7 +156,8 @@ The JASPAR database is available under:
 It *may* also be possible to dump some of the other databases required directly
 from the Wasserman lab DB servers using the mysqldump facility. All databases
 have a "read-only" (i.e. select privilege) user which does not require a
-password. Note: this method is not guaranteed to work.
+password. Note: you will probably have to use the --skip-lock-tables option
+to the mysqldump command.
 
 The Ensembl core and compara databases as well as the "ensembl_databases" DB
 are all hosted on the server vm2.cmmt.ubc.ca and can be accessed via user

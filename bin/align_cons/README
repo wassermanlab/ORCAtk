@@ -1,8 +1,8 @@
 align_cons -  Compute conserved regions from an alignment.
-
 --------------------------------------------------------------------------------
 
 Usage:
+
 align_cons [-i in_file] [-w window_size] [-n increment]
 		[-t threshold] [-s stringency] [-g gff_file] [-r report_type]
 		[-l length] [-f format] [-o out_file] [-D]

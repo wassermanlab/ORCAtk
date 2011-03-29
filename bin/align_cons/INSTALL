@@ -1,8 +1,8 @@
-Building and installing align_cons executable.
+To build and install the align_cons executable, generally just execute the
+following commands:
 
-To build and install, use the following:
-	make
-	make install
+    make
+    make install (as root)
 
 The default installation directory is /usr/local/bin. Root access is generally
 required to install there. Edit the BINDIR variable in the Makefile to change
