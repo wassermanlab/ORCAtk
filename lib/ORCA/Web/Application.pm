@@ -147,8 +147,8 @@ sub setup
         # If we have an existing session, expire it (delete the temp file).
         #
         if ($sid) {
-            my $state = ORCA::Web::State->new(__Fn => _session_tmp_file($sid));
-            $state->expire();
+            #my $state = ORCA::Web::State->new(__Fn => _session_tmp_file($sid));
+            #$state->expire();
             $self->{-state} = undef;
         }
 
@@ -535,6 +535,12 @@ sub select_gene1
     my @species = @$specref;
     unshift @species, 'Select orthologous species';
 
+    my $phastcons_species = SPECIES_TRACK_NAMES;
+    my $supports_phastcons = 0;
+    if ($phastcons_species->{$species1}) {
+        $supports_phastcons = 1;
+    }
+
     my $vars = {
         abs_html_path    => ABS_HTML_PATH,
         rel_html_path    => REL_HTML_PATH,
@@ -547,6 +553,7 @@ sub select_gene1
         ensembl_dbs      => $state->species_ensembl_dbs,
         in_gene_list     => $genes,
         in_species1      => $species1,
+        supports_phastcons => $supports_phastcons,
         var_template     => "select_gene1.html"
     };
 
@@ -894,9 +901,9 @@ sub results
                 -matrixtype     => 'PWM'
             );
 
-            printf STDERR "[%s] results matrix_args = \n%s\n\n",
-                scalar localtime(time),
-                Data::Dumper::Dumper(%matrix_args);
+            #printf STDERR "[%s] results matrix_args = \n%s\n\n",
+            #    scalar localtime(time),
+            #    Data::Dumper::Dumper(%matrix_args);
 
             $matrix_set = $self->fetch_matrix_set(%matrix_args);
 
@@ -2720,8 +2727,8 @@ sub write_tf_site_pairs
     }
 
     printf TFBS
-        "TF\t  Cons.\t Start1\t   End1\tStrand1\t Score1\t\%Score1\tSeq1"
-        . "\t Start2\t   End2\tStrand2\t Score2\t\%Score2\tSeq2\n";
+        "TF\t  Cons.\t Start1\t   End1\tStrand1\t Score1\t%%Score1\tSeq1"
+        . "\t Start2\t   End2\tStrand2\t Score2\t%%Score2\tSeq2\n";
 
     my $iter = $tfbs->Iterator(-sort_by => 'start');
     while (my $site_pair = $iter->next()) {
@@ -2906,8 +2913,8 @@ sub fetch_ensembl_seqs
         _revcom_feature_coords($exons, $seq);
     }
 
-    printf STDERR "[%s] fetch_ensembl_seqs exons\n:%s\n\n",
-        scalar localtime(time), Data::Dumper::Dumper($exons);
+    #printf STDERR "[%s] fetch_ensembl_seqs exons\n:%s\n\n",
+    #    scalar localtime(time), Data::Dumper::Dumper($exons);
 
     # get CpG islands
     my $cpgs = _get_cpg_islands_from_slice($slice);
@@ -3225,7 +3232,7 @@ sub fetch_ensembl_orthologs_compara
         my $ghs_homol   = $ghs->[1];
         my $ghs_spec2   = lc $ghs->[2];
 
-        printf STDERR "ghs_spec2: $ghs_spec2\n";
+        #printf STDERR "ghs_spec2: $ghs_spec2\n";
         if (   $ghs_spec2 eq lc $species2
             || $ghs_spec2 eq lc $latin_name2
             || $ghs_spec2 eq lc $latin_name2a
