@@ -16,9 +16,11 @@
   <br>
   <hr noshade>
   <br>
-  <input type="submit" name="Submit" value="Multi-species (phastCons) Analysis" onClick="javascript:document.select_gene.rm.value='select_transcript1'; document.select_gene.analysis_type.value='phastcons'">&nbsp;(human/mouse only)
-  <br>
-  <br>
+  [%IF supports_phastcons%]
+    <input type="submit" name="Submit" value="Multi-species (phastCons) Analysis" onClick="javascript:document.select_gene.rm.value='select_transcript1'; document.select_gene.analysis_type.value='phastcons'">&nbsp;
+    <br>
+    <br>
+  [%END%]
   <input type="submit" name="Submit" value="Pairwise Analysis" onClick="javascript:document.select_gene.rm.value='select_ortholog'; document.select_gene.analysis_type.value='pairwise'">&nbsp;
   <select size=1 name=species2>
     [%FOREACH s = species%]
