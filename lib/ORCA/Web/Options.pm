@@ -5,7 +5,7 @@ use constant VERSION => '1.0.0';
 use constant CONTACT_NAME   => 'David Arenillas';
 use constant CONTACT_EMAIL  => 'dave@cmmt.ubc.ca';
 
-use constant ORCA_HOME  => '/space/devel/ORCAtk';
+use constant ORCA_HOME  => '/disk1/ORCAtk';
 
 # Libs
 use constant ORCA_LIB   => ORCA_HOME . '/lib';
@@ -17,8 +17,8 @@ use constant ORCA_LIB   => ORCA_HOME . '/lib';
 #
 #use constant ENSEMBL_LIB            => '/usr/local/src/ensembl-current/ensembl/modules';
 #use constant ENSEMBL_COMPARA_LIB    => '/usr/local/src/ensembl-current/ensembl-compara/modules';
-use constant ENSEMBL_LIB            => '/usr/local/src/ensembl-59/ensembl/modules';
-use constant ENSEMBL_COMPARA_LIB    => '/usr/local/src/ensembl-59/ensembl-compara/modules';
+use constant ENSEMBL_LIB            => '/usr/local/src/ensembl-62/ensembl/modules';
+use constant ENSEMBL_COMPARA_LIB    => '/usr/local/src/ensembl-62/ensembl-compara/modules';
 
 # Environment variables
 use constant LD_LIBRARY_PATH    => '/usr/local/mysql/lib/mysql';
@@ -42,12 +42,20 @@ use constant ENSEMBL_DATABASES_DB_NAME => "ensembl_databases";
 # XXX No longer using ensembl_databases DB for this!
 use constant SPECIES_UCSC_DB_NAMES => {
     'human' => 'hg19',
-    'mouse' => 'mm9'
+    'mouse' => 'mm9',
+    'rat'   => 'rn4',
+    'fly'   => 'dm3',
+    #'worm'  => 'ce6',
+    'yeast' => 'sacCer2'
 };
 
 use constant SPECIES_TRACK_NAMES => {
     'human' => 'phastCons46wayPlacental',
-    'mouse' => 'phastCons30wayPlacental'
+    'mouse' => 'phastCons30wayPlacental',
+    'rat'   => 'phastCons9way',
+    'fly'   => 'phastCons15way',
+    #'worm'  => 'phastCons6way',
+    'yeast' => 'phastCons7way'
 };
 
 #use constant ENSEMBL_MART_HOMOL_TBL_TEMPLATE
