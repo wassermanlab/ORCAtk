@@ -1347,12 +1347,13 @@ sub results_pairwise
 
         $ucsc_url =
             sprintf
-            "http://genome.ucsc.edu/cgi-bin/hgTracks?org=%s&db=%s&position=%s:%d-%d&hgt.customText=http://www.cisreg.ca/ORCAtk/tmp/%s",
+            "http://genome.ucsc.edu/cgi-bin/hgTracks?org=%s&db=%s&position=%s:%d-%d&hgt.customText=%s/tmp/%s",
             $state->species1,
             $state->species_ucsc_dbs->{$state->species1},
             $seq_chr1,
             $graph_start,
             $graph_end,
+            ORCA_URL,
             $ucsc_file;
 
         close(UCSC);
@@ -1633,14 +1634,22 @@ sub results_phastcons
 
     close(UCSC);
 
+    if (   $seq_chr1 !~ /scaffold/i
+        && $seq_chr1 !~ /contig/i
+        && $seq_chr1 !~ /ultra/i
+        && $seq_chr1 !~ /super/i)
+    {
+        $seq_chr1 = "chr$seq_chr1";
+    }
 
     $ucsc_url =
-        sprintf "http://genome.ucsc.edu/cgi-bin/hgTracks?org=%s&db=%s&position=%s:%d-%d&hgt.customText=http://www.cisreg.ca/ORCAtk/tmp/%s",
+        sprintf "http://genome.ucsc.edu/cgi-bin/hgTracks?org=%s&db=%s&position=%s:%d-%d&hgt.customText=%s/tmp/%s",
         $state->species1,
         $state->species_ucsc_dbs->{$state->species1},
         $seq_chr1,
         $graph_start,
         $graph_end,
+        ORCA_URL,
         $ucsc_file;
 
     my $vars = {

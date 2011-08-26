@@ -6,6 +6,7 @@ use constant CONTACT_NAME   => 'David Arenillas';
 use constant CONTACT_EMAIL  => 'dave@cmmt.ubc.ca';
 
 use constant ORCA_HOME  => '/disk1/ORCAtk';
+use constant ORCA_URL   => 'http://www.cisreg.ca/ORCAtk';
 
 # Libs
 use constant ORCA_LIB   => ORCA_HOME . '/lib';
