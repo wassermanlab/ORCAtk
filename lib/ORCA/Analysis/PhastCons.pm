@@ -39,7 +39,8 @@ of a DNA sequence using phastCons.
  my $regions = $phca->compute_conserved_regions(
      -min_conservation   => '70%',
      -min_length         => 20,
-     -filter_exons       => 1
+     -filter_exons       => 1,
+     -flank_size         => 100
  );
 
  #
@@ -497,6 +498,28 @@ sub filter_exons
     return $self->{-filter_exons};
 }
 
+=head2 flank_size
+
+ Title    : flank_size
+ Usage    : $size = $phca->flank_size($size);
+ Function : Get/set the amount of flanking sequence added to the conserved
+            regions.
+ Returns  : 
+ Args     : The flank size used in computing the conserved regions.
+
+=cut
+
+sub flank_size
+{
+    my ($self, $len) = @_;
+
+    if (defined $len) {
+        $self->{-flank_size} = $len;
+    }
+
+    return $self->{-flank_size};
+}
+
 =head2 conservation_profile
 
  Title    : conservation_profile
@@ -940,6 +963,9 @@ sub compute_conservation_profile
                                    filtered out of conserved regions.
             -min_length         => (int) minimum length of conserved
                                    region to keep
+            -flank_size         => (int) if specified, add this much
+                                   flanking sequence to either side of the
+                                   conserved regions
 
 =cut
 
@@ -981,7 +1007,14 @@ sub compute_conserved_regions
         $min_cr_len = $self->min_conserved_region_length($args{-min_cr_len})
     }
 
+    my $flank_size = 0;
+    if (defined $args{-flank_size}) {
+        $flank_size = $self->flank_size($args{-flank_size});
+    }
+
     my $exons = $self->exons;
+
+    @$exons = sort {$a->start <=> $b->start} @$exons;
 
     my @conservation;
     if ($self->conservation_profile) {
@@ -1088,8 +1121,7 @@ sub compute_conserved_regions
         _combine_conserved_regions(
             \@conservation, \@crs, $min_conservation, $min_cr_len
         )
-    )
-    {
+    ) {
         @crs = ();
         @crs = @{$combined_crs};
     }
@@ -1101,13 +1133,32 @@ sub compute_conserved_regions
     #
     if ($filter_exons && $exons && @crs) {
         my $cut_crs = _cut_exons_from_conserved_regions(
-                \@conservation, \@crs, $exons, $self->start
+            \@conservation, \@crs, $exons, $self->start
         );
 
         if ($cut_crs) {
             @crs = @$cut_crs;
         } else {
             @crs = undef;
+        }
+    }
+
+    if ($flank_size) {
+        my $flanked_crs = _add_conserved_region_flanks(
+            \@conservation, \@crs, $exons, $self->start, $flank_size
+        );
+
+        if ($flanked_crs) {
+            @crs = @$flanked_crs;
+        } else {
+            @crs = undef;
+        }
+
+        if (@crs) {
+            while (my $combined_crs = _combine_flanked_conserved_regions(\@crs))            {
+                @crs = ();
+                @crs = @{$combined_crs};
+            }
         }
     }
 
@@ -1677,11 +1728,100 @@ sub _combine_conserved_regions
     return $combined ? \@crs2 : undef;
 }
 
+sub _add_conserved_region_flanks
+{
+    my ($conservation, $crs, $exons, $start, $flank_size) = @_;
+
+    my $last_idx = $#{$conservation};
+
+    @$exons = sort {$a->start <=> $b->start} @$exons;
+
+    foreach my $cr (@$crs) {
+        my $cr_start = $cr->start - $flank_size;
+        $cr_start = 0 if $cr_start < 0;
+
+        my $cr_end = $cr->end + $flank_size;
+        $cr_end = $last_idx if $cr_end > $last_idx;
+
+        foreach my $ex (@$exons) {
+            #
+            # Exons are in seq region coords but conserved regions are in
+            # 0-based coords
+            #
+            my $ex_start = $ex->start - $start;
+            my $ex_end   = $ex->end - $start;
+
+            next if $ex_end < $cr_start;
+            last if $ex_start > $cr_end;
+
+            if ($ex_end <= $cr->end && $ex_end > $cr_start) {
+                $cr_start = $ex_end + 1;
+            }
+
+            if ($ex_start >= $cr->start && $ex_start < $cr_end) {
+                $cr_end = $ex_start - 1;
+            }
+        }
+
+        $cr->start($cr_start);
+        $cr->end($cr_end);
+    }
+
+    return $crs;
+}
+
+sub _combine_flanked_conserved_regions
+{
+    my ($crs) = @_;
+
+    my @crs2;
+    my $combined = 0;
+    my $i        = 0;
+    while (defined $crs->[$i + 1]) {
+        # 0-based index coords
+        my $lstart = $crs->[$i]->start;
+        my $lend   = $crs->[$i]->end;
+        my $rstart = $crs->[$i + 1]->start;
+        my $rend   = $crs->[$i + 1]->end;
+
+        if ($lend >= $rstart && $lstart <= $lend) {
+            #
+            # Score of the combined region takes the lower score of the two
+            # regions being combined
+            #
+            my $score = $crs->[$i]->score;
+            if ($crs->[$i + 1]->score < $score) {
+                $score = $crs->[$i + 1]->score;
+            }
+
+            my $cr = Bio::SeqFeature::Generic->new(
+                -primary_id   => $crs->[$i]->display_name,
+                -display_name => $crs->[$i]->display_name,
+                -source_tag   => "ORCA",
+                -start        => $rstart,
+                -end          => $rend,
+                -score        => $score
+            );
+
+            push @crs2, $cr;
+            $combined = 1;
+            $i++;
+        } else {
+            push @crs2, $crs->[$i];
+        }
+        $i++;
+    }
+
+    if (defined $crs->[$i]) {
+        push @crs2, $crs->[$i];
+    }
+
+    return $combined ? \@crs2 : undef;
+}
+
 sub _cut_exons_from_conserved_regions
 {
     my ($conservation, $crs, $exons, $start) = @_;
-
-    @$exons = sort {$a->start <=> $b->start} @$exons;
 
     my @cut_crs;
 
