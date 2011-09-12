@@ -1143,6 +1143,24 @@ sub compute_conserved_regions
         }
     }
 
+    #
+    # Keep only regions > min. region length and which still score above min.
+    # conservation.
+    #
+    my @signif_crs;
+    foreach my $cr (@crs) {
+        if (
+            ($cr->end - $cr->start + 1) > $min_cr_len
+            && $cr->score >= $min_conservation
+        )
+        {
+            push @signif_crs, $cr;
+        }
+    }
+
+    @crs = ();
+    @crs = @signif_crs;
+
     if ($flank_size) {
         my $flanked_crs = _add_conserved_region_flanks(
             \@conservation, \@crs, $exons, $self->start, $flank_size
@@ -1163,37 +1181,22 @@ sub compute_conserved_regions
     }
 
     #
-    # Keep only regions > min. region length and which still score above min.
-    # conservation.
-    #
-    my @final_crs;
-    foreach my $cr (@crs) {
-        if (
-            ($cr->end - $cr->start + 1) > $min_cr_len
-            && $cr->score >= $min_conservation
-        )
-        {
-            push @final_crs, $cr;
-        }
-    }
-
-    #
     # XXX Change conserved region coordinates from 0-based (array index) coords
     # back relative (1-based) coords DJA 09/12/13
     #
-    foreach my $cr (@final_crs) {
+    foreach my $cr (@crs) {
         $cr->start($cr->start + 1);
         $cr->end($cr->end + 1);
     }
     #
     # Otherwise if using chromosomal coords
     #
-    #foreach my $cr (@final_crs) {
+    #foreach my $cr (@crs) {
     #    $cr->start($cr->start + $start);
     #    $cr->end($cr->end + $start);
     #}
 
-    $self->{-conserved_regions} = @final_crs ? \@final_crs : undef;
+    $self->{-conserved_regions} = @crs ? \@crs : undef;
 }
 
 =head2 extract_conserved_subsequences
@@ -1798,7 +1801,7 @@ sub _combine_flanked_conserved_regions
                 -primary_id   => $crs->[$i]->display_name,
                 -display_name => $crs->[$i]->display_name,
                 -source_tag   => "ORCA",
-                -start        => $rstart,
+                -start        => $lstart,
                 -end          => $rend,
                 -score        => $score
             );
