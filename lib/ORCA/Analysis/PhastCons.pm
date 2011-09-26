@@ -1115,15 +1115,29 @@ sub compute_conserved_regions
         push @crs, $cr;
     }
 
+    #
     # Combine regions into larger regions which still score
     # above min. conservation
-    while (my $combined_crs =
-        _combine_conserved_regions(
-            \@conservation, \@crs, $min_conservation, $min_cr_len
-        )
-    ) {
-        @crs = ();
-        @crs = @{$combined_crs};
+    #
+    if ($filter_exons && $exons) {
+        while (my $combined_crs =
+            _combine_conserved_regions_exluding_exons(
+                \@conservation, \@crs, $exons, $min_conservation, $min_cr_len,
+                $self->start
+            )
+        ) {
+            @crs = ();
+            @crs = @{$combined_crs};
+        }
+    } else {
+        while (my $combined_crs =
+            _combine_conserved_regions(
+                \@conservation, \@crs, $min_conservation, $min_cr_len
+            )
+        ) {
+            @crs = ();
+            @crs = @{$combined_crs};
+        }
     }
 
     #
@@ -1131,17 +1145,17 @@ sub compute_conserved_regions
     # regions can result in conserved region spanning an exon position)
     # NOTE: this may result in regions which now score below min. conservation
     #
-    if ($filter_exons && $exons && @crs) {
-        my $cut_crs = _cut_exons_from_conserved_regions(
-            \@conservation, \@crs, $exons, $self->start
-        );
-
-        if ($cut_crs) {
-            @crs = @$cut_crs;
-        } else {
-            @crs = undef;
-        }
-    }
+    #if ($filter_exons && $exons && @crs) {
+    #    my $cut_crs = _cut_exons_from_conserved_regions(
+    #        \@conservation, \@crs, $exons, $self->start
+    #    );
+    #
+    #    if ($cut_crs) {
+    #        @crs = @$cut_crs;
+    #    } else {
+    #        @crs = undef;
+    #    }
+    #}
 
     #
     # Keep only regions > min. region length and which still score above min.
@@ -1731,13 +1745,93 @@ sub _combine_conserved_regions
     return $combined ? \@crs2 : undef;
 }
 
+sub _combine_conserved_regions_exluding_exons
+{
+    my ($conservation, $crs, $exons, $min_conservation, $min_len, $start) = @_;
+
+    my @crs2;
+    my $combined = 0;
+    my $i        = 0;
+    while (defined $crs->[$i + 1]) {
+        # 0-based index coords
+        my $lstart = $crs->[$i]->start;
+        my $lend   = $crs->[$i]->end;
+
+        my $rstart = $crs->[$i + 1]->start;
+        my $rend   = $crs->[$i + 1]->end;
+
+        my $exon_between = 0;
+        foreach my $exon (@$exons) {
+            #
+            # Exons are in seq region coords but conserved regions are in
+            # 0-based coords
+            #
+            my $xstart = $exon->start - $start;
+            my $xend   = $exon->end - $start;
+
+            last if $xstart > $rstart;
+            next if $xend < $lend;
+
+            if ($xend >= $lend && $xstart <= $rstart) {
+                $exon_between = 1;
+            }
+        }
+
+        if ($exon_between) {
+            #
+            # If there is an exon between the two conserved regions,
+            # don't combine them.
+            #
+            push @crs2, $crs->[$i];
+        } else {
+            my $score = _score_region($conservation, $lstart, $rend);
+
+            if ($score >= $min_conservation) {
+                #printf
+                #  "combining region %s (%d-%d) and %s (%d-%d); score = %.3f\n",
+                #        $crs->[$i]->display_name, $rstart, $crs->[$i]->end,
+                #        $crs->[$i+1]->display_name, $crs->[$i+1]->start, $rend,
+                #        $score;
+
+                my $cr = Bio::SeqFeature::Generic->new(
+                    -primary_id   => $crs->[$i]->display_name,
+                    -display_name => $crs->[$i]->display_name,
+                    -source_tag   => "ORCA",
+                    -start        => $lstart,
+                    -end          => $rend,
+                    -score        => $score
+                );
+                push @crs2, $cr;
+                $combined = 1;
+                $i++;
+            } else {
+                #printf "NOT combining region %s (%d-%d) and %s (%d-%d);"
+                #        . " score = %.3f\n",
+                #        $crs->[$i]->display_name, $rstart, $crs->[$i]->end,
+                #        $crs->[$i+1]->display_name, $crs->[$i+1]->start, $rend,
+                #        $score;
+
+                push @crs2, $crs->[$i];
+            }
+        }
+        $i++;
+    }
+
+    if (defined $crs->[$i]) {
+        push @crs2, $crs->[$i];
+    }
+
+    return $combined ? \@crs2 : undef;
+}
+
 sub _add_conserved_region_flanks
 {
     my ($conservation, $crs, $exons, $start, $flank_size) = @_;
 
     my $last_idx = $#{$conservation};
 
-    @$exons = sort {$a->start <=> $b->start} @$exons;
+    # assumes sorted in calling method
+    #@$exons = sort {$a->start <=> $b->start} @$exons;
 
     foreach my $cr (@$crs) {
         my $cr_start = $cr->start - $flank_size;
