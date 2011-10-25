@@ -1575,7 +1575,7 @@ sub ucsc_track
 
     my $tfbss = $self->conserved_tfbss;
     if ($tfbss) {
-        $track .= "track name=\"TFBSs\" description=\"TF Binding Sites\" color=0,0,255 visibility=2\n";
+        $track .= "track name=\"TFBSs\" description=\"TF Binding Sites\" color=0,0,255 visibility=3\n";
 
         foreach my $tf (@$tfbss) {
             $track .= sprintf "%s\t%d\t%d\t%s\t%.3f\n",
