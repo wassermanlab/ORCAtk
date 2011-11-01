@@ -27,7 +27,7 @@ orca - The top-level ORCA web application CGI script
 
 use strict;
 
-use lib '/devel/ORCAtk/lib';
+use lib '/apps/ORCAtk/lib';
 
 use ORCA::Web::Application;
 
