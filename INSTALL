@@ -29,10 +29,18 @@ by ORCAtk.
    Alternatively, of course you could copy the ORCAtk htdocs and cgi-bin
    directories directly into the apache tree.
 
-3) For web-based ORCAtk, copy the sample configuration file Options.pm.sample
-   under the lib/ORCA/Web subdirectory to Options.pm and edit the constants
-   to reflect your installation. Specifically you should edit the ORCA_HOME
-   constant to point to the directory under which ORCAtk is installed.
+3) For web-based ORCAtk, copy the main CGI sample script cgi-bin/orca.sample
+   to cgi-bin/orca. Edit the "use lib" line to reflect the path to the ORCAtk
+   lib directory.
+
+   Copy the html/index.html.sample file to html/index.html and edit the
+   '<body onload' line to reflect the correct html path to the location of
+   the above CGI script.
+
+   Copy the sample configuration file Options.pm.sample under the lib/ORCA/Web
+   subdirectory to Options.pm and edit the constants to reflect your
+   installation. Specifically you should edit the ORCA_HOME constant to point
+   to the directory under which ORCAtk is installed.
    
    Edit the paths to the various installed libraries and modules
    (ENSEMBL_LIB etc.) and the absolute paths to htdocs and cgi-bin.
