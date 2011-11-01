@@ -1014,7 +1014,9 @@ sub compute_conserved_regions
 
     my $exons = $self->exons;
 
-    @$exons = sort {$a->start <=> $b->start} @$exons;
+    if ($exons) {
+        @$exons = sort {$a->start <=> $b->start} @$exons;
+    }
 
     my @conservation;
     if ($self->conservation_profile) {
