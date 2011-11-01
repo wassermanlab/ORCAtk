@@ -2245,7 +2245,7 @@ sub ucsc_track
 
     my $crs = $self->conserved_regions;
     if ($crs) {
-        $track .= "track name=\"Conserved\" description=\"ORCA Conserved Regions\" color=0,255,255\n";
+        $track .= "track name=\"Conserved Regions\" description=\"ORCA Conserved Regions\" color=0,255,255\n";
 
         my $num = 0;
         foreach my $cr (@$crs) {
@@ -2279,7 +2279,7 @@ sub ucsc_track
 
     my $cp = $self->conservation_profile;
     if ($cp) {
-        $track .= "track type=wiggle_0 name=\"Conservation\" description=\"ORCA Pairwise Conservation\" color=255,0,0 graphType=bar yLineMark=0.0 yLineOnOff=on visibility=2\n";
+        $track .= "track type=wiggle_0 name=\"Conservation\" description=\"ORCA Conservation (pairwise)\" color=255,0,0 graphType=bar yLineMark=0.0 yLineOnOff=on visibility=2\n";
 
         $track .= sprintf "fixedStep chrom=%s start=%d step=1\n",
             $chr, $start;
