@@ -50,24 +50,14 @@ use Bio::EnsEMBL::Registry;
 use Bio::EnsEMBL::DBSQL::DBAdaptor;
 use Bio::Tools::Est2Genome;
 use Bio::Graphics::Panel;
-#use TFBS::DB::JASPAR4;
 use TFBS::DB::JASPAR5;
 use TFBS::MatrixSet;
 use TFBS::Matrix::PFM;
-use ORCA::Aligner;
-use ORCA::ConservationAnalysis::Pairwise;
-use ORCA::ConservationAnalysis::PhastCons;
-use ORCA::TFBSConservation::Pairwise;
-use ORCA::TFBSConservation::PhastCons;
-use ORCA::Graphics::PairwiseGraph;
-use ORCA::Graphics::PhastConsGraph;
 use ORCA::Web::State;
-
-# XXX New - replaces ORCA::ConservationAnalysis::PhastCons and
-# ORCA::TFBSConservation::PhastCons
 use ORCA::Analysis::PhastCons;
-# XXX New - replaces ORCA::Graphics::PhastConsGraph
+use ORCA::Analysis::Pairwise;
 use ORCA::Graphics::PhastCons;
+use ORCA::Graphics::Pairwise;
 
 use CGI::Carp qw(carpout);    # fatalsToBrowser;
 
@@ -994,7 +984,6 @@ sub results_pairwise
     my $alignment;
     my $ca;
     my $phca;
-    my $tfbs_set;
     my $seq1_rel_path;
     my $seq2_rel_path;
     my $masked_seq1_rel_path;
@@ -1002,6 +991,7 @@ sub results_pairwise
     my $aln_rel_path;
     my $css_rel_path;
     my $cr_rel_path;
+    my $tfbss;
     my $tfbs_rel_path;
     my $plot_rel_path;
     my $arch_rel_path;
@@ -1012,18 +1002,25 @@ sub results_pairwise
     my $graph_start = $seq_obj1->start;
     my $graph_end   = $seq_obj1->end;
 
-    my $aligner = ORCA::Aligner->new();
-    if (!$aligner) {
-        return $self->error("Could not initialize ORCA aligner");
-    }
-
     #printf STDERR "seq1 strand = %d\n", $seq_obj1->strand;
     #printf STDERR "seq2 strand = %d\n", $seq_obj2->strand;
 
-    $alignment = $aligner->align(
-        -seq1 => $masked_seq_obj1 || $seq_obj1,
-        -seq2 => $masked_seq_obj2 || $seq_obj2
+    $ca = ORCA::Analysis::Pairwise->new(
+        -chr                   => $seq_chr1,
+        -start                 => $graph_start,
+        -end                   => $graph_end,
+        -base_seq              => $seq_obj1,
+        -comparison_seq        => $seq_obj2,
+        -masked_base_seq       => $masked_seq_obj1,
+        -masked_comparison_seq => $masked_seq_obj2,
+        -base_seq_exons        => $seq_exons1,
     );
+
+    if (!$ca) {
+        return $self->error("Could not set up conservation analysis");
+    }
+
+    $alignment = $ca->compute_alignment();
 
     if (!$alignment) {
         return $self->error("Could not align sequences");
@@ -1031,19 +1028,6 @@ sub results_pairwise
 
 #printf STDERR "aligned seq1 strand = %d\n", $alignment->get_seq_by_pos(1)->strand;
 #printf STDERR "aligned seq2 strand = %d\n", $alignment->get_seq_by_pos(2)->strand;
-
-    $ca = ORCA::ConservationAnalysis::Pairwise->new(
-        -base_seq              => $seq_obj1,
-        -masked_base_seq       => $masked_seq_obj1,
-        -comparison_seq        => $seq_obj2,
-        -masked_comparison_seq => $masked_seq_obj2,
-        -base_seq_exons        => $seq_exons1,
-        -alignment             => $alignment
-    );
-
-    if (!$ca) {
-        return $self->error("Could not set up conservation analysis");
-    }
 
     my %ccp_params;
     #
@@ -1053,18 +1037,21 @@ sub results_pairwise
     $ccp_params{'-position_type'} = 'c';
     $ccp_params{'-window_size'}   = $state->ca_window_size
         if $state->ca_window_size;
-    $ccp_params{'-top_pct'} = $state->ca_top_percentile / 100
-        if $state->ca_top_percentile;
+    $ccp_params{'-window_inc'}    = 1;
+
     if (!$ca->compute_conservation_profile(%ccp_params)) {
         return $self->error("Could not compute conservation profile");
     }
 
     my %ccr_params;
+    $ccr_params{'-top_pct'} = $state->ca_top_percentile / 100
+        if $state->ca_top_percentile;
     $ccr_params{'-min_conservation'} = $state->ca_min_conservation / 100
         if $state->ca_min_conservation;
     $ccr_params{'-filter_exons'}           = $state->ca_filter_exons;
     $ccr_params{'-min_filtered_cr_length'} = $state->ca_min_cr_length
         if $state->ca_min_cr_length;
+
     if (!$ca->compute_conserved_regions(%ccr_params)) {
         # not an error, there could be no siginificant conservation
         $self->add_warning("No conserved regions found");
@@ -1072,117 +1059,25 @@ sub results_pairwise
 
     my $matrix_set = $state->tf_matrix_set();
     if ($matrix_set) {
-        my $tf_cons = ORCA::TFBSConservation::Pairwise->new(
-            -conservation_analysis => $ca);
+        my $tf_search_start = $state->tf_search_start || 1;
+        my $tf_search_end = $state->tf_search_end || $seq_obj1->length();
 
-        if (!$tf_cons) {
-            return $self->error(
-                "Could not set up conserved TFBS analysis");
-        }
-
-        $tfbs_set = $tf_cons->find_conserved_tf_sites(
+        $tfbss = $ca->compute_conserved_tfbss(
             -matrix_set     => $matrix_set,
             -tfbs_threshold => $state->tf_threshold
-            ? $state->tf_threshold . '%'
-            : undef,
+                               ? $state->tf_threshold . '%'
+                               : undef,
             -min_tfbs_cr_overlap      => MIN_TFBS_CONSERVATION_OVERLAP,
             -filter_overlapping_sites => $state->tf_filter_sites,
-            -start                    => $state->tf_search_start,
-            -end                      => $state->tf_search_end
+            -start                    => $tf_search_start,
+            -end                      => $tf_search_end
         );
-
-        if ($tfbs_set) {
-            my $iter = $tfbs_set->Iterator(-sort_by => 'start');
-            while (my $site_pair = $iter->next) {
-                push @tf_sites, $site_pair->feature1;
-            }
-        }
     }
 
-    my @graph_tf_sites;
-    foreach my $tf (@tf_sites) {
-        my $tf_start = $tf->start + $graph_start - 1;
-        my $tf_end   = $tf->end + $graph_start - 1;
-        push @graph_tf_sites,
-            TFBS::Site->new(
-                -primary_tag  => $tf->primary_tag,
-                -source_tag   => $tf->source_tag,
-                -display_name => $tf->display_name,
-                -pattern      => $tf->pattern,
-                -strand       => $tf->strand,
-                -score        => $tf->score,
-                -start        => $tf_start,
-                -end          => $tf_end
-            );
-    }
-    #print STDERR "graph_tf_sites:\n" . Data::Dumper::Dumper(@graph_tf_sites) . "\n";
-
-    my @graph_exons;
-    foreach my $exon (@$seq_exons1) {
-        my $gexon = Bio::SeqFeature::Gene::Exon->new(
-            -primary_tag  => $exon->primary_tag,
-            -source_tag   => $exon->source_tag,
-            -display_name => $exon->display_name,
-            -strand       => $exon->strand
-        );
-        $gexon->start($exon->start + $graph_start - 1);
-        $gexon->end($exon->end + $graph_start - 1);
-        push @graph_exons, $gexon;
-    }
-   #print STDERR "graph_exons:\n" . Data::Dumper::Dumper(@graph_exons) . "\n";
-
-    my @graph_cpgs;
-    foreach my $cpg (@$seq_cpgs1) {
-        my $gcpg = Bio::SeqFeature::Generic->new(
-            -primary_tag => $cpg->primary_tag,
-            -source_tag  => $cpg->source_tag,
-            -strand      => $cpg->strand
-        );
-        $gcpg->start($cpg->start + $graph_start - 1);
-        $gcpg->end($cpg->end + $graph_start - 1);
-        push @graph_cpgs, $gcpg;
-    }
-    #print STDERR "graph_cpgs:\n" . Data::Dumper::Dumper(@graph_cpgs) . "\n";
-
-    my @graph_crs;
-
-    my @graph_profile = @{$ca->conservation_profile}
-        if $ca->conservation_profile;
-    foreach my $point (@graph_profile) {
-        $point->{-position} += $graph_start - 1;
-    }
-    #print STDERR "graph_profile:\n"
-    #            . Data::Dumper::Dumper(@graph_profile) . "\n";
-
-    if ($ca->conserved_regions) {
-        foreach my $cr (@{$ca->conserved_regions}) {
-            my $f1_start = $cr->feature1->start + $graph_start - 1;
-            my $f1_end   = $cr->feature1->end + $graph_start - 1;
-            push @graph_crs,
-                Bio::SeqFeature::Generic->new(
-                -primary_tag  => $cr->primary_tag,
-                -source_tag   => $cr->source_tag,
-                -display_name => $cr->display_name,
-                -score        => $cr->score,
-                -start        => $f1_start,
-                -end          => $f1_end
-                );
-        }
-        #print STDERR "graph_crs:\n" . Data::Dumper::Dumper(@graph_crs) . "\n";
-    }
-
-    my $cutoff = $ca->conservation_cutoff;
-    $cons_graph = ORCA::Graphics::PairwiseGraph->new(
-        -base_seq             => $seq_obj1,
-        -cutoff               => $cutoff,
-        -conservation_profile => @graph_profile ? \@graph_profile : undef,
-        -conserved_regions    => @graph_crs ? \@graph_crs : undef,
-        -tf_sites => @graph_tf_sites ? \@graph_tf_sites : undef,
-        -exons       => @graph_exons ? \@graph_exons : undef,
-        -cpg_islands => @graph_cpgs  ? \@graph_cpgs  : undef,
-        -start       => $graph_start,
-        -end         => $graph_end,
-        -flip        => $self->state->flip_graph
+    $cons_graph = ORCA::Graphics::Pairwise->new(
+        -analysis       => $ca,
+        -cpg_islands    => $seq_cpgs1,
+        -flip           => $self->state->flip_graph
     );
 
     if (!$cons_graph || !$cons_graph->{-gd_image}) {
@@ -1273,7 +1168,7 @@ sub results_pairwise
 
     # write TFBS pairs
     my $tfbs_file = "${fbase}_TFBSs.txt";
-    $self->write_tf_site_pairs($tfbs_set, $tfbs_file);
+    $self->write_tf_site_pairs($tfbss, $tfbs_file);
     $tfbs_rel_path = REL_TMP_PATH . "/$tfbs_file";
 
     #
@@ -1291,72 +1186,36 @@ sub results_pairwise
     #
     my $ucsc_url;
     if ($seq_chr1) {
-        if (   $seq_chr1 !~ /scaffold/i
-            && $seq_chr1 !~ /contig/i
-            && $seq_chr1 !~ /ultra/i
-            && $seq_chr1 !~ /super/i)
-        {
-            $seq_chr1 = "chr$seq_chr1";
+        my $track = $ca->ucsc_track;
+
+        if ($track) {
+            my $ucsc_file = "${fbase}_UCSC_track.txt";
+
+            $ucsc_rel_path = REL_TMP_PATH . "/$ucsc_file";
+            my $ucsc_abs_path = ABS_TMP_PATH . "/$ucsc_file";
+
+            unless (open(UCSC, ">$ucsc_abs_path")) {
+                $self->add_warning(
+                    "Could not create UCSC track file $ucsc_file"
+                );
+            } else {
+                print UCSC "$track\n";
+
+                close(UCSC);
+
+                $ucsc_url =
+                    sprintf "http://genome.ucsc.edu/cgi-bin/hgTracks?org=%s&db=%s&position=%s:%d-%d&hgt.customText=%s/tmp/%s",
+                    $state->species1,
+                    $state->species_ucsc_dbs->{$state->species1},
+                    $seq_chr1,
+                    $graph_start,
+                    $graph_end,
+                    ORCA_URL,
+                    $ucsc_file;
+            }
+        } else {
+            $self->add_warning("Could not create UCSC track");
         }
-
-        my $ucsc_file = "${fbase}_UCSC_track.txt";
-        $ucsc_rel_path = REL_TMP_PATH . "/$ucsc_file";
-        my $ucsc_abs_path = ABS_TMP_PATH . "/$ucsc_file";
-        if (!open(UCSC, ">$ucsc_abs_path")) {
-            return $self->error(
-                "Could not create UCSC track file $ucsc_file");
-        }
-        printf UCSC "browser position %s:%d-%d\n",
-            $seq_chr1,
-            $graph_start,
-            $graph_end;
-
-        print UCSC
-            "track name=\"Conserved\" description=\"ORCA Conserved Regions\" color=0,255,255\n";
-        my $num = 0;
-        foreach my $cr (@graph_crs) {
-            $num++;
-            printf UCSC "%s\t%d\t%d\t%s\t%.3f\n",
-                $seq_chr1,
-                $cr->start,
-                $cr->end,
-                "CR$num",
-                $cr->score;
-        }
-
-        print UCSC
-            "track name=\"TFBSs\" description=\"TF Binding Sites\" color=0,0,255\n";
-        foreach my $tf (@graph_tf_sites) {
-            printf UCSC "%s\t%d\t%d\t'%s'\t%.1f\n",
-                $seq_chr1,
-                $tf->start,
-                $tf->end,
-                $tf->pattern->name,
-                $tf->rel_score;
-        }
-
-        print UCSC
-            "track type=wiggle_0 name=\"Conservation\" description=\"ORCA Conservation\" color=255,0,0 graphType=bar yLineMark=0.0 yLineOnOff=on visibility=2\n";
-
-        printf UCSC "fixedStep chrom=%s start=%d step=1\n",
-            $seq_chr1, $graph_start;
-
-        foreach my $point (@graph_profile) {
-            printf UCSC "%.3f\n", $point->{-score};
-        }
-
-        $ucsc_url =
-            sprintf
-            "http://genome.ucsc.edu/cgi-bin/hgTracks?org=%s&db=%s&position=%s:%d-%d&hgt.customText=%s/tmp/%s",
-            $state->species1,
-            $state->species_ucsc_dbs->{$state->species1},
-            $seq_chr1,
-            $graph_start,
-            $graph_end,
-            ORCA_URL,
-            $ucsc_file;
-
-        close(UCSC);
     }
 
     my $vars = {
@@ -1437,7 +1296,6 @@ sub results_phastcons
     my $alignment;
     my $ca;
     my $phca;
-    my $tfbs_set;
     my $seq1_rel_path;
     my $seq2_rel_path;
     my $masked_seq1_rel_path;
@@ -2650,12 +2508,7 @@ sub write_conserved_subsequences
     my $sid = $self->state->sid;
     my $analysis_type = $self->state->analysis_type;
 
-    my $css;
-    if ($analysis_type eq 'pairwise') {
-        $css = $ao->extract_conserved_subsequences;
-    } elsif ($analysis_type eq 'phastcons') {
-        $css = $ao->compute_conserved_subsequences;
-    }
+    my $css = $ao->compute_conserved_subsequences;
 
     if (!$css) {
         $self->add_warning("No conserved sub-sequences");
@@ -2724,9 +2577,9 @@ sub write_conserved_tfbss
 
 sub write_tf_site_pairs
 {
-    my ($self, $tfbs, $tfbs_file) = @_;
+    my ($self, $tfbss, $tfbs_file) = @_;
 
-    return if !$tfbs;
+    return if !$tfbss;
 
     my $sid           = $self->state->sid;
     my $tfbs_abs_path = ABS_TMP_PATH . "/$tfbs_file";
@@ -2739,8 +2592,7 @@ sub write_tf_site_pairs
         "TF\t  Cons.\t Start1\t   End1\tStrand1\t Score1\t%%Score1\tSeq1"
         . "\t Start2\t   End2\tStrand2\t Score2\t%%Score2\tSeq2\n";
 
-    my $iter = $tfbs->Iterator(-sort_by => 'start');
-    while (my $site_pair = $iter->next()) {
+    foreach my $site_pair (@$tfbss) {
         my $site1 = $site_pair->site1;
         my $site2 = $site_pair->site2;
 
@@ -3822,32 +3674,18 @@ sub _get_exons_from_slice
                 # Ensembl Exons to Bioperl Exons.
                 #
                 if ($exon->end >= $slice_start && $exon->start <= $slice_end) {
-                    my $new_exon;
                     #
-                    # XXX
-                    # PhastCons analysis now expected exons to be passed with
-                    # chromosomal start/ends but Pairwise still expects
-                    # 1-based coords. This is a total kludge - FIX pairwise
-                    # to make consistent with phastCons!
-                    # XXX
+                    # The analysis objects expecte exons to be passed with
+                    # chromosomal start/ends not coords relative to transcript
+                    # start.
                     #
-                    if ($analysis_type eq 'phastcons') {
-                        $new_exon = Bio::SeqFeature::Gene::Exon->new(
-                            -primary_tag => 'exon',
-                            -source_tag  => 'ensembl',
-                            -start       => $slice->start + $exon->start - 1,
-                            -end         => $slice->start + $exon->end - 1,
-                            -strand      => $exon->strand
-                        );
-                    } else {
-                        $new_exon = Bio::SeqFeature::Gene::Exon->new(
-                            -primary_tag => 'exon',
-                            -source_tag  => 'ensembl',
-                            -start       => $exon->start,
-                            -end         => $exon->end,
-                            -strand      => $exon->strand
-                        );
-                    }
+                    my $new_exon = Bio::SeqFeature::Gene::Exon->new(
+                        -primary_tag => 'exon',
+                        -source_tag  => 'ensembl',
+                        -start       => $slice->start + $exon->start - 1,
+                        -end         => $slice->start + $exon->end - 1,
+                        -strand      => $exon->strand
+                    );
 
                     push(@exon_list, $new_exon);
                 }
