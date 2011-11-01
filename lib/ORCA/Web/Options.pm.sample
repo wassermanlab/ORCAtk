@@ -5,8 +5,8 @@ use constant VERSION => '1.0.0';
 use constant CONTACT_NAME   => 'David Arenillas';
 use constant CONTACT_EMAIL  => 'dave@cmmt.ubc.ca';
 
-use constant ORCA_HOME  => '/disk1/ORCAtk';
-use constant ORCA_URL   => 'http://www.cisreg.ca/ORCAtk';
+use constant ORCA_HOME  => '/apps/ORCAtk';
+use constant ORCA_URL   => 'http://cisreg.cmmt.ubc.ca/ORCAtk';
 
 # Libs
 use constant ORCA_LIB   => ORCA_HOME . '/lib';
@@ -16,19 +16,17 @@ use constant ORCA_LIB   => ORCA_HOME . '/lib';
 # the genome assembly becomes out of sync with that of the current UCSC
 # phastCons DB
 #
-#use constant ENSEMBL_LIB            => '/usr/local/src/ensembl-current/ensembl/modules';
-#use constant ENSEMBL_COMPARA_LIB    => '/usr/local/src/ensembl-current/ensembl-compara/modules';
-use constant ENSEMBL_LIB            => '/usr/local/src/ensembl-62/ensembl/modules';
-use constant ENSEMBL_COMPARA_LIB    => '/usr/local/src/ensembl-62/ensembl-compara/modules';
+use constant ENSEMBL_LIB            => '/usr/local/src/ensembl-current/ensembl/modules';
+use constant ENSEMBL_COMPARA_LIB    => '/usr/local/src/ensembl-current/ensembl-compara/modules';
 
 # Environment variables
-use constant LD_LIBRARY_PATH    => '/usr/local/mysql/lib/mysql';
+use constant LD_LIBRARY_PATH    => '/usr/lib/mysql';
 
 # Paths and URLs
-use constant ABS_HTML_PATH      => '/usr/local/apache/htdocs/ORCAtk';
-use constant ABS_CGI_BIN_PATH   => '/usr/local/apache/cgi-bin/ORCAtk';
-use constant ABS_TEMPLATE_PATH  => '/usr/local/apache/htdocs/ORCAtk/templates';
-use constant ABS_TMP_PATH       => '/usr/local/apache/htdocs/ORCAtk/tmp';
+use constant ABS_HTML_PATH      => '/var/www/htdocs/ORCAtk';
+use constant ABS_CGI_BIN_PATH   => '/var/www/cgi-bin/ORCAtk';
+use constant ABS_TEMPLATE_PATH  => '/var/www/htdocs/ORCAtk/templates';
+use constant ABS_TMP_PATH       => '/var/www/htdocs/ORCAtk/tmp';
 use constant REL_TMP_PATH       => '/ORCAtk/tmp';
 use constant REL_CGI_BIN_PATH   => '/cgi-bin/ORCAtk';
 use constant REL_HTML_PATH      => '/ORCAtk';
@@ -47,7 +45,7 @@ use constant SPECIES_UCSC_DB_NAMES => {
     'rat'   => 'rn4',
     'fly'   => 'dm3',
     #'worm'  => 'ce6',
-    'yeast' => 'sacCer2'
+    #'yeast' => 'sacCer2'
 };
 
 use constant SPECIES_TRACK_NAMES => {
@@ -56,7 +54,7 @@ use constant SPECIES_TRACK_NAMES => {
     'rat'   => 'phastCons9way',
     'fly'   => 'phastCons15way',
     #'worm'  => 'phastCons6way',
-    'yeast' => 'phastCons7way'
+    #'yeast' => 'phastCons7way'
 };
 
 #use constant ENSEMBL_MART_HOMOL_TBL_TEMPLATE
