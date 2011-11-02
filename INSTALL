@@ -3,7 +3,9 @@ ORCAtk Installation Instructions
 
 Installation instructions for ORCAtk. Please also see the DEPENDENCIES file
 for a list of prerequisite databases, programs and libraries that are required
-by ORCAtk.
+by ORCAtk. These instructions assume a linux environment with an apache web
+server. It should be possible to install ORCAtk in another environment but
+this has not been tested.
 
 1) Compile and install the C programs, nwalign and align_cons under the
    bin sub-directory. Follow the instructions in the INSTALL files under
@@ -59,7 +61,9 @@ by ORCAtk.
    a configuration file specifying the UCSC database connection parameters.
    For web-based ORCAtk this configuration file is called hg.conf and must be
    created in the ORCAtk/cgi-bin and configured to reflect your specific
-   UCSC database installation.
+   UCSC database installation. Copy cgi-bin/hg.conf.sample to cgi-bin/hg.conf
+   and edit it to reflect the database connection parameters required to
+   access your local UCSC DB configuration.
 
    An example of the contents of this file is:
 
@@ -70,5 +74,27 @@ by ORCAtk.
 
    NOTE: the permissions of the hg.conf file should be set to 600.
 
-   If you are running the stand-alone analysis scripts you must create the
-   file .hg.conf (in this case, note the leading '.') in your home directory.
+   If you are running the stand-alone phastCons analysis script you must
+   also create the file '.hg.conf' (in this case, note the leading '.') in
+   your home directory. It is also necessary to change the mode of this file
+   to 600, e.g.:
+   	chmod 600 ~/.hg.conf
+
+5) For web-based ORCAtk, create a log directory under the ORCAtk home dir, e.g.:
+	mkdir ORCAtk/log
+
+   Change the ownership of this log directory to apache (or whatever user/group
+   your web server runs under), e.g.:
+   	sudo chown apache:apache ORCAtk/log
+
+   For extra security it might be a good idea to set restrictive permissions
+   on this directory, e.g.:
+   	sudo chmod 700 ORCAtk/log
+   directory
+
+6) For web-based ORCAtk, create a temporary directory 'tmp' under the ORCAtk
+   htdocs dir, e.g.:
+   	mkdir ORCAtk/htdocs/tmp
+
+   Change the ownership/permissions of this directory as per the log directory
+   above.
