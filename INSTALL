@@ -29,9 +29,21 @@ by ORCAtk.
    Alternatively, of course you could copy the ORCAtk htdocs and cgi-bin
    directories directly into the apache tree.
 
-3) For web-based ORCAtk, copy the main CGI sample script cgi-bin/orca.sample
-   to cgi-bin/orca. Edit the "use lib" line to reflect the path to the ORCAtk
-   lib directory.
+3) For web-based ORCAtk, create the following directories:
+       htdocs/tmp
+       log
+
+   Change the ownership of these directories to that of the user that the
+   web server runs under and/or make these directories at least
+   read/write/executable to to that user, e.g:
+
+       chown apache:apache htdocs/tmp
+       chmod 700 htdocs/tmp
+
+4) For web-based ORCAtk, copy the main CGI sample script cgi-bin/orca.sample
+   to cgi-bin/orca.
+
+   Edit the "use lib" line to reflect the path to the ORCAtk lib directory.
 
    Copy the html/index.html.sample file to html/index.html and edit the
    '<body onload' line to reflect the correct html path to the location of
@@ -55,7 +67,7 @@ by ORCAtk.
    It is possible to edit other values to reflect different default values
    for the ORCAtk analysis.
 
-4) The hgWiggle program used by ORCAtk to retrieve phastCons scores requires
+5) The hgWiggle program used by ORCAtk to retrieve phastCons scores requires
    a configuration file specifying the UCSC database connection parameters.
    For web-based ORCAtk this configuration file is called hg.conf and must be
    created in the ORCAtk/cgi-bin and configured to reflect your specific
@@ -72,3 +84,4 @@ by ORCAtk.
 
    If you are running the stand-alone analysis scripts you must create the
    file .hg.conf (in this case, note the leading '.') in your home directory.
+

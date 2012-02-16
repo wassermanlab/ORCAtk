@@ -10,10 +10,18 @@ The following software and databases are required by ORCAtk.
 
    ORCAtk has been tested with version 1.4.
 
-2) The TFBS perl library
+2) The TFBS perl library is required.
 
-   This is available at:
-   	http://tfbs.genereg.net
+   This is available at as a tarball at:
+        http://tfbs.genereg.net
+
+   NOTE: The tar file DOES NOT contain the TFBS:DB:JASPAR5.pm module
+
+   You can also browse the subversion repository at:
+        http://www.ii.uib.no/svn/lenhard/TFBS/
+
+   The easiest way then is to get the tarball, unzip it and then retrieve
+   the JASPR5.pm module from the SVN.
 
 3) Perl modules
 
@@ -21,10 +29,11 @@ The following software and databases are required by ORCAtk.
 	CGI
    	CGI::Application
 	Data::Dumper
-	DBD::MySQL
+	DBD::mysql
 	DBI
 	File::Temp
 	GD
+	Persistence::Object::Simple
 	Template
 
    These should all be available through cpan.
